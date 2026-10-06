@@ -26,6 +26,7 @@ function transport() {
   transporter ??= nodemailer.createTransport({
     host: config.smtp.host,
     port: config.smtp.port,
+    family: 4,
     secure: config.smtp.port === 465,
     auth: config.smtp.user ? { user: config.smtp.user, pass: config.smtp.pass } : undefined,
     pool: true,                 // reuse open connections: no TCP + TLS + login per email
