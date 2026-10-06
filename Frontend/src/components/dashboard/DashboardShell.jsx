@@ -10,10 +10,11 @@
 //   phone:   a slim top bar and a bottom tab bar under the thumb
 // ============================================================
 
-import { Suspense, useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import {
-  ChartNoAxesColumn, ChevronsUpDown, Gauge, Droplets, FlaskConical, House, ListChecks, LogOut, MessagesSquare,
+  ChartNoAxesColumn, Check, ChevronsUpDown, Gauge, Droplets, FlaskConical, House, ListChecks, LogOut, MessagesSquare,
   Settings2, Store, User,
 } from '@/components/ui/icons';
 
@@ -31,6 +32,77 @@ import Botanical from '@/components/ui/Botanical';
 import LocaleSelect from '@/components/ui/LocaleSelect';
 import Logo from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
+import { locales } from '@/i18n/routing';
+
+/** Short labels for each locale — one char/syllable, shown inside a circle. */
+const LOCALE_LABEL = { en: 'E', hi: 'हि', gu: 'ગુ' };
+
+/**
+ * Compact circle-style language switcher for the mobile top bar.
+ * Shows one character in a 32px circle; dropdown lists all languages.
+ */
+function MobileLocaleSelect() {
+  const t = useTranslations('languageSwitcher');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const [pending, start] = useTransition();
+  const [open, setOpen] = useState(false);
+  const root = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const away = (e) => { if (!root.current?.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('pointerdown', away);
+    document.addEventListener('keydown', esc);
+    return () => { document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', esc); };
+  }, [open]);
+
+  const pick = useCallback((code) => {
+    setOpen(false);
+    if (code === locale) return;
+    const query = search.toString();
+    start(() => router.replace(query ? `${pathname}?${query}` : pathname, { locale: code }));
+  }, [locale, pathname, router, search]);
+
+  return (
+    <div ref={root} className="relative">
+      <button type="button" onClick={() => setOpen((v) => !v)} disabled={pending}
+        aria-haspopup="listbox" aria-expanded={open} aria-label={`${t('label')}: ${t(locale)}`}
+        className={cn(
+          'grid size-8 place-items-center rounded-full border text-xs font-semibold transition-colors',
+          open ? 'border-forest bg-sage text-forest' : 'border-line bg-surface text-muted hover:border-forest/40 hover:text-ink'
+        )}>
+        {LOCALE_LABEL[locale] || locale.slice(0, 1).toUpperCase()}
+      </button>
+
+      {open && (
+        <ul role="listbox" aria-label={t('label')}
+          className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl border border-line bg-surface p-1 text-ink shadow-[0_18px_40px_-12px_rgba(0,0,0,.35)]">
+          <li className="px-2.5 pt-1.5 pb-1 text-[0.62rem] font-medium tracking-[0.18em] text-faint uppercase" aria-hidden>{t('label')}</li>
+          {locales.map((code) => {
+            const on = code === locale;
+            return (
+              <li key={code} role="option" aria-selected={on}>
+                <button type="button" onClick={() => pick(code)} lang={code}
+                  className={cn('flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors',
+                    on ? 'bg-sage font-medium text-ink' : 'text-muted hover:bg-canvas hover:text-ink')}>
+                  <span className="grid size-6 place-items-center rounded-full border border-line text-[0.7rem] font-semibold">
+                    {LOCALE_LABEL[code] || code.slice(0, 1).toUpperCase()}
+                  </span>
+                  <span className="flex-1">{t(code)}</span>
+                  {on && <Check className="size-4 text-leaf" aria-hidden />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 // Operators get their own, short menu: the console, the accounts table and settings.
 const ADMIN_NAV = [
@@ -175,6 +247,7 @@ export default function DashboardShell({ children }) {
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-canvas px-4 lg:hidden">
           <Logo href="/dashboard" />
           <div className="flex items-center gap-2">
+            <Suspense><MobileLocaleSelect /></Suspense>
             <ThemeToggle compact />
             <Link href="/dashboard/settings" aria-label={t('settings')}
               className="grid size-9 place-items-center rounded-full bg-forest text-xs font-medium text-on-forest">{initials}</Link>
@@ -190,9 +263,17 @@ export default function DashboardShell({ children }) {
         <ul className="no-scrollbar flex overflow-x-auto">
           {nav.filter((n) => n.key !== 'settings').map(({ href, key, icon: Icon }) => {
             const active = isActive(pathname, href);
+            const isAssistant = key === 'assistant';
+            // If already on assistant and user taps "Ask" again → start a new chat
+            const handleClick = (e) => {
+              if (isAssistant && active) {
+                e.preventDefault();
+                router.push(`/dashboard/assistant?new=${Date.now()}`);
+              }
+            };
             return (
               <li key={href} className="min-w-[3.25rem] flex-1">
-                <Link href={href} aria-current={active ? 'page' : undefined}
+                <Link href={href} onClick={handleClick} aria-current={active ? 'page' : undefined}
                   className={cn('flex flex-col items-center gap-1 px-0.5 py-2 text-[0.62rem] leading-tight transition-colors',
                     active ? 'text-forest dark:text-leaf' : 'text-faint')}>
                   <span className={cn('grid h-7 w-10 place-items-center rounded-full transition-colors', active && 'bg-sage')}>
