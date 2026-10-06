@@ -1,0 +1,21 @@
+# FarmXpert AI backend (FastAPI). Floors are the versions it is tested with.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.8
+httpx[http2]>=0.27        # http2 pulls in h2: one reused connection to the LLM API
+python-dotenv>=1.0
+tiktoken>=0.7              # exact token counts for usage and cost
+
+# Crop model and analytics
+numpy>=2.0
+pandas>=2.2
+scikit-learn>=1.5
+joblib>=1.4
+
+# Knowledge index (pgvector). Tables are owned by the Node backend's migrations.
+sqlalchemy[asyncio]>=2.0.30
+asyncpg>=0.29
+
+# Optional - each feature degrades cleanly when its package is absent:
+#   tensorflow        market LSTM price forecast (falls back to moving average)
+#   langchain-groq    LLM narration for crop predictions

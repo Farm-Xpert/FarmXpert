@@ -1,0 +1,5 @@
+# Everything to run the tests: the app's packages plus the test tools.
+#   pip install -r requirements-dev.txt
+-r requirements.txt
+pytest>=8.0
+langgraph>=0.2             # the tests run agents inside a real LangGraph state graph

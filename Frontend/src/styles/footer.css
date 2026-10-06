@@ -1,0 +1,133 @@
+/* Wrapped in a cascade layer so the app's Tailwind utilities (a later layer) win over
+   this file's global resets.
+   The footer: deep forest green in both themes, shading from the top-left to a
+   darker bottom-right, faint leaf artwork in two corners, gold column titles. */
+@layer landing {
+.site-footer {
+  --ft-bg: linear-gradient(165deg, #0f4a2e 0%, #0d442a 35%, #0c3d26 70%, #0a3722 100%);
+  --ft-glow: rgba(255, 255, 255, 0.025);
+  --ft-text: rgba(230, 238, 231, 0.84);
+  --ft-strong: #ffffff;
+  --ft-muted: rgba(230, 238, 231, 0.62);
+  --ft-title: #d9a441;
+  --ft-accent: #e8c267;
+  --ft-rule: rgba(230, 238, 231, 0.12);
+  --fx-logo-ink: #ffffff;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--ft-text);
+  background: var(--ft-bg);
+  font-family: 'Sora', sans-serif;
+  font-weight: 300;
+}
+/* dark theme: the same forest green, a shade deeper and closer to black,
+   so the footer settles into the dark page instead of standing out */
+html:not([data-theme='light']) .site-footer {
+  --ft-bg: linear-gradient(165deg, #0b3521 0%, #09301e 35%, #072818 70%, #051f13 100%);
+  --ft-rule: rgba(230, 238, 231, 0.10);
+}
+.site-footer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(640px 420px at 12% 18%, var(--ft-glow), transparent 70%);
+  pointer-events: none;
+}
+
+/* faint leaves, drawn as light silhouettes */
+.site-footer-leaf {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+  filter: brightness(0) invert(1);
+  opacity: 0.07;
+}
+.site-footer-leaf.is-top { top: -60px; left: -40px; width: 170px; transform: rotate(-24deg); }
+.site-footer-leaf.is-bottom { right: -30px; bottom: -40px; width: 260px; transform: rotate(-12deg); opacity: 0.1; }
+
+.site-footer-inner {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 64px 48px 48px;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 1.7fr;
+  gap: 40px;
+}
+.site-footer-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.site-footer-mark { height: 42px; width: auto; }
+.site-footer-word { height: 24px; width: auto; }
+.site-footer-tagline { margin: 18px 0 0; max-width: 270px; font-size: 0.88rem; line-height: 1.7; color: var(--ft-text); }
+
+.site-footer-title {
+  margin: 4px 0 18px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ft-title);
+}
+.site-footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; }
+.site-footer-col a, .site-footer-legal a {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--ft-text);
+  text-decoration: none;
+  /* underline that grows from the left on hover */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  padding-bottom: 2px;
+  transition: color .2s, background-size .35s cubic-bezier(.22, .61, .36, 1);
+}
+.site-footer-col a:hover, .site-footer-col a:focus-visible,
+.site-footer-legal a:hover, .site-footer-legal a:focus-visible { color: var(--ft-strong); background-size: 100% 1px; }
+.site-footer-col a[aria-current='page'] { color: var(--ft-accent); }
+
+.site-footer-contact li { display: flex; align-items: flex-start; gap: 12px; font-size: 0.88rem; line-height: 1.5; }
+.site-footer-contact svg { flex: none; width: 17px; height: 17px; margin-top: 1px; color: var(--ft-title); stroke-width: 1.6; }
+
+.site-footer-bottom {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 22px 48px 26px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.76rem;
+  color: var(--ft-muted);
+  position: relative;
+}
+.site-footer-bottom::before {       /* full-width rule */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 1px solid var(--ft-rule);
+}
+.site-footer-bottom p { margin: 0; }
+.site-footer-legal { display: flex; justify-content: flex-end; gap: 22px; }
+.site-footer-legal a { font-size: 0.76rem; color: var(--ft-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer-col a, .site-footer-legal a { transition: color .2s; }
+}
+@media (max-width: 1080px) {
+  .site-footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 32px; padding: 52px 32px 40px; }
+  .site-footer-brand { grid-column: 1 / -1; }
+  .site-footer-bottom { padding: 20px 32px 24px; }
+}
+@media (max-width: 720px) {
+  .site-footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 44px 20px 32px; gap: 32px 20px; }
+  .site-footer-inner > .site-footer-col:last-child { grid-column: 1 / -1; }
+  .site-footer-bottom { grid-template-columns: 1fr; padding: 18px 20px 24px; }
+  .site-footer-legal { justify-content: flex-start; }
+  .site-footer-leaf.is-bottom { width: 180px; }
+}
+}
