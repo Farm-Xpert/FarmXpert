@@ -14,6 +14,7 @@
  */
 
 
+import net from 'node:net';
 import nodemailer from 'nodemailer';
 
 import { config } from '../../config/env.js';
@@ -21,12 +22,45 @@ import { logger } from '../../lib/logger.js';
 
 let transporter = null;
 
+export function connectSmtpIpv4(options, callback) {
+  const socket = net.connect({
+    host: options.host,
+    port: options.port,
+    family: 4,
+  });
+  let settled = false;
+  const timeout = setTimeout(() => {
+    const error = new Error('SMTP connection timed out');
+    error.code = 'ETIMEDOUT';
+    socket.destroy(error);
+  }, options.connectionTimeout ?? 10_000);
+  timeout.unref();
+
+  const finish = (error, socketOptions) => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timeout);
+    socket.removeListener('connect', onConnect);
+    socket.removeListener('error', onError);
+    callback(error, socketOptions);
+  };
+  const onConnect = () => finish(null, {
+    connection: socket,
+    servername: options.host,
+  });
+  const onError = (error) => finish(error);
+
+  socket.once('connect', onConnect);
+  socket.once('error', onError);
+}
+
 function transport() {
   if (!config.smtp.host) return null;
   transporter ??= nodemailer.createTransport({
     host: config.smtp.host,
     port: config.smtp.port,
     family: 4,
+    getSocket: connectSmtpIpv4,
     secure: config.smtp.port === 465,
     auth: config.smtp.user ? { user: config.smtp.user, pass: config.smtp.pass } : undefined,
     pool: true,                 // reuse open connections: no TCP + TLS + login per email
