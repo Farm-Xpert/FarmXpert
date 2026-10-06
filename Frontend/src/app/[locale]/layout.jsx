@@ -70,6 +70,13 @@ export async function generateMetadata({ params }) {
       title: 'FarmXpert',
     },
     icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+        { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+        { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      ],
+      shortcut: '/favicon.ico',
       apple: '/icons/apple-touch-icon.png',
     },
     openGraph: {
@@ -126,6 +133,10 @@ export default async function LocaleLayout({ children, params }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="shortcut icon" href="/favicon.ico" />
       </head>
       <body>
         <LocaleProvider locale={locale} messages={messages}>
