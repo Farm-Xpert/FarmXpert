@@ -17,7 +17,7 @@ agent means adding a file like this one - nothing in the engine changes.
 from __future__ import annotations
 
 import math
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from orchestration.contracts import (
@@ -39,7 +39,11 @@ _UTC_NOW = lambda: datetime.now(timezone.utc)  # noqa: E731
 
 def build_weather() -> AgentSpec:
     from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
-    from agents.crop_planning_growth.weather_watcher.config import AGENT_VERSION
+    from agents.crop_planning_growth.weather_watcher.config import (
+        AGENT_VERSION,
+        CACHE_STALE_MAX_SECONDS,
+        VALID_RAIN_MM,
+    )
 
     agent = WeatherAgent("weather")
 
@@ -48,19 +52,75 @@ def build_weather() -> AgentSpec:
             raise AgentInputError("Weather needs a location.")
         return await agent.run(dict(context.location))
 
+    def has_usable_today_rain(raw: dict, days: Any) -> bool:
+        location = raw.get("location")
+        if not isinstance(location, dict):
+            return False
+        for key, bounds in (("lat", (-90.0, 90.0)), ("lon", (-180.0, 180.0))):
+            value = location.get(key)
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or not bounds[0] <= value <= bounds[1]):
+                return False
+
+        stamp = raw.get("fetched_at") or raw.get("retrieved_at")
+        try:
+            fetched_at = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return False
+        if fetched_at.tzinfo is None:
+            return False
+
+        age = raw.get("data_age_seconds")
+        if (isinstance(age, bool) or not isinstance(age, (int, float))
+                or not math.isfinite(age) or not 0 <= age <= CACHE_STALE_MAX_SECONDS):
+            return False
+
+        offset = raw.get("utc_offset_seconds")
+        if (isinstance(offset, bool) or not isinstance(offset, (int, float))
+                or not math.isfinite(offset) or int(offset) != offset
+                or abs(offset) > 18 * 60 * 60):
+            return False
+        local_today = fetched_at.astimezone(
+            timezone(timedelta(seconds=int(offset)))).date().isoformat()
+
+        if not isinstance(days, list):
+            return False
+        for day in days:
+            if not isinstance(day, dict) or day.get("date") != local_today:
+                continue
+            rainfall = day.get("rainfall_mm")
+            probability = day.get("rain_probability_percent")
+            source = day.get("source")
+            if (isinstance(rainfall, bool) or not isinstance(rainfall, (int, float))
+                    or not math.isfinite(rainfall)
+                    or not VALID_RAIN_MM[0] <= rainfall <= VALID_RAIN_MM[1]):
+                continue
+            if (isinstance(probability, bool) or not isinstance(probability, (int, float))
+                    or not math.isfinite(probability) or not 0 <= probability <= 100):
+                continue
+            if isinstance(source, str) and source.strip():
+                return True
+        return False
+
     def validate_output(raw: Any) -> NormalizedOutput:
         if not isinstance(raw, dict):
             raise AgentOutputError("Weather did not return an object.")
         status = raw.get("status")
-        if status not in (None, "ok", "stale"):
+        if status not in (None, "ok", "stale", "partial"):
             # The agent reports its own failure in-band rather than raising.
             raise AgentOutputError(f"Weather reported status '{status}'.")
         days = raw.get("forecast_short_term") or raw.get("forecast") or []
+        if status == "partial" and not has_usable_today_rain(raw, days):
+            raise AgentOutputError(f"Weather reported status '{status}'.")
         if not days:
             raise AgentOutputError("Weather returned no forecast days.")
 
         warnings = list(raw.get("warnings") or [])
         age = _seconds_since(raw.get("fetched_at") or raw.get("retrieved_at"))
+        if status == "partial":
+            warnings.append(
+                "Weather data is partial; only today's validated rainfall forecast "
+                "should be treated as reliable.")
         if status == "stale":
             warnings.append("The forecast is older than usual; treat it with care.")
         return NormalizedOutput(

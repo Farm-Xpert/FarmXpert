@@ -284,6 +284,11 @@ class WeatherService:
         ow_days, ow_today = self._parse_ow_forecast(ow_forecast_raw, warnings)
         om_current, om_days, om_today, tz_name = self._parse_openmeteo(om_raw, warnings)
         hourly, et0_by_date, utc_offset = self._parse_openmeteo_hourly(om_raw, warnings)
+        if utc_offset is None and ow_today is not None and ow_forecast_raw is not None:
+            try:
+                utc_offset = int((ow_forecast_raw.get("city") or {}).get("timezone", 0))
+            except (TypeError, ValueError):
+                utc_offset = None
 
         # A source is "ok" when it answered with something readable - an empty
         # set of complete days is a valid answer, not a failure.

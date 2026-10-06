@@ -17,6 +17,7 @@ import random
 import sys
 import time
 import traceback
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from orchestration.aggregate import (
@@ -424,6 +425,52 @@ def test_malformed_output_is_rejected():
     check("invalid output is not success",
           results["liar"].status == AgentStatus.INVALID_OUTPUT, results["liar"].status)
     check("it is coded as invalid output", results["liar"].error_code == ErrorCode.INVALID_OUTPUT)
+
+
+@case
+def test_usable_partial_weather_is_accepted_only_for_today_rain():
+    from orchestration.agents.field_agents import build_weather
+
+    offset = timezone(timedelta(hours=5, minutes=30))
+    fetched_at = datetime.now(offset)
+    today = fetched_at.date().isoformat()
+    raw = {
+        "status": "partial",
+        "location": {"lat": 21.1702, "lon": 72.8311},
+        "timezone": "Asia/Kolkata",
+        "utc_offset_seconds": 19800,
+        "fetched_at": fetched_at.isoformat(),
+        "data_age_seconds": 300,
+        "forecast_short_term": [{
+            "date": today,
+            "rainfall_mm": 2.5,
+            "rain_probability_percent": 60.0,
+            "source": "open-meteo",
+        }],
+        "warnings": ["OpenWeather current is having problems."],
+    }
+    validate = build_weather().validate_output
+
+    try:
+        output = validate(raw)
+    except AgentOutputError as exc:
+        check("usable partial weather is accepted", False, str(exc))
+    else:
+        check("usable partial weather is accepted",
+              output.data is raw and any("partial" in warning for warning in output.warnings))
+
+    incomplete = dict(raw, forecast_short_term=[{
+        "date": (fetched_at.date() + timedelta(days=1)).isoformat(),
+        "rainfall_mm": 2.5,
+        "rain_probability_percent": 60.0,
+        "source": "open-meteo",
+    }])
+    try:
+        validate(incomplete)
+    except AgentOutputError:
+        check("partial weather without today's rainfall stays invalid", True)
+    else:
+        check("partial weather without today's rainfall stays invalid", False)
 
 
 @case

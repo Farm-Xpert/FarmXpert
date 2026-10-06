@@ -186,6 +186,33 @@ async def case_malformed_payload_does_not_fail_the_request():
         and len(out["forecast_short_term"]) > 0
 
 
+async def case_openweather_partial_keeps_local_date_metadata():
+    fresh()
+    local_midnight = datetime.now(IST).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+    slots = [{
+        "dt": int((local_midnight + timedelta(hours=3 * index)).timestamp()),
+        "main": {"temp": 30.0, "temp_min": 25.0, "temp_max": 35.0, "humidity": 50},
+        "wind": {"speed": 4.0}, "pop": 0.2, "rain": {"3h": 1.0},
+    } for index in range(8)]
+    providers = FakeProviders(
+        forecast=lambda r: httpx.Response(
+            200, json={"city": {"timezone": 19800}, "list": slots}),
+        **{"open-meteo": lambda r: httpx.Response(503)},
+    )
+    out = await providers.agent().run({"lat": LAT, "lon": LON})
+    from orchestration.agents.field_agents import build_weather
+    from orchestration.engine import AgentOutputError
+
+    try:
+        build_weather().validate_output(out)
+    except AgentOutputError:
+        return False
+    return (out["status"] == "partial" and out["timezone"] is None
+            and out["utc_offset_seconds"] == 19800
+            and out["forecast_short_term"][0]["date"] == local_midnight.date().isoformat())
+
+
 async def case_corrupt_values_are_dropped_not_passed_on():
     fresh()
     providers = FakeProviders(**{"open-meteo": lambda r: httpx.Response(
@@ -672,6 +699,7 @@ CASES = [
     case_forecast_days_are_full_local_calendar_days,
     case_rainfall_today_is_the_full_day_total,
     case_malformed_payload_does_not_fail_the_request,
+    case_openweather_partial_keeps_local_date_metadata,
     case_corrupt_values_are_dropped_not_passed_on,
     case_providers_are_called_concurrently,
     case_cache_serves_repeat_requests_without_calling_providers,
