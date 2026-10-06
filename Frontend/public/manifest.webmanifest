@@ -1,13 +1,16 @@
 {
+  "id": "/",
   "name": "FarmXpert",
   "short_name": "FarmXpert",
   "description": "Smart agriculture advisory and farm management platform",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0f4a2e",
   "background_color": "#fbf7f1",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -20,12 +23,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "categories": ["agriculture", "productivity", "utilities"]
