@@ -65,11 +65,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 #   --workers 2      : multi-process (tune per CPU; ECS task vCPU count)
 #   --limit-concurrency 100 : back-pressure guard
 #   --access-log     : ship to CloudWatch via stdout
-CMD ["python", "-m", "uvicorn", "main:app", \
-     "--host", "0.0.0.0", \
-     "--port", "8000", \
-     "--workers", "2", \
-     "--limit-concurrency", "100", \
-     "--proxy-headers", \
-     "--forwarded-allow-ips", "*", \
-     "--access-log"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "100", "--proxy-headers", "--forwarded-allow-ips", "*", "--access-log"]
