@@ -36,6 +36,7 @@ export function getPool() {
 
   pool = new pg.Pool({
     connectionString: config.db.url,
+    options: '-c search_path=public',
     max: config.db.poolMax,
     idleTimeoutMillis: config.db.idleTimeoutMs,
     connectionTimeoutMillis: 5000,
