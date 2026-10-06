@@ -3,7 +3,7 @@
   "name": "FarmXpert",
   "short_name": "FarmXpert",
   "description": "Smart agriculture advisory and farm management platform",
-  "start_url": "/",
+  "start_url": "/auth/login",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],

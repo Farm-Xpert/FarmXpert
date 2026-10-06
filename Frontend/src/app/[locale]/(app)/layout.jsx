@@ -17,6 +17,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import PwaSplash from '@/components/pwa/PwaSplash';
 import { THEME_COOKIE } from '@/lib/theme';
 import '@/styles/app.css';
 
@@ -42,7 +43,10 @@ export default async function AppLayout({ children, params }) {
   return (
     <ThemeProvider initial={initial}
       className={`${playfair.variable} ${poppins.variable} ${gujarati.variable} ${allura.variable}`}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+          <PwaSplash />
+          {children}
+        </AuthProvider>
     </ThemeProvider>
   );
 }
