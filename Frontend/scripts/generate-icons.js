@@ -1,9 +1,16 @@
 /**
  * generate-icons.js
- * Renders the FarmXpert LogoMark SVG into high-quality transparent PNGs
- * for PWA icons and Apple Touch Icon.
+ * Renders the FarmXpert LogoMark SVG into high-quality PNGs for PWA.
  *
- * Uses sharp (bundled with Next.js) for pixel-perfect SVG-to-PNG conversion.
+ * Mobile OSes (Android + iOS) do NOT support transparent PWA icons:
+ *   - Android fills transparency with white on home screen, black on splash
+ *   - iOS fills transparency with black
+ *
+ * Solution: bake the background color into the icon so it looks clean everywhere.
+ *   - "any" icons use #fbf7f1 (cream — matches background_color in manifest)
+ *     → On splash screen the icon blends seamlessly (appears "no background")
+ *     → On home screen it appears as a clean cream icon
+ *   - "maskable" icon uses #0f4a2e (forest green) for the adaptive safe-zone
  */
 
 const sharp = require('sharp');
@@ -13,33 +20,28 @@ const path = require('path');
 const ICONS_DIR = path.join(__dirname, '..', 'public', 'icons');
 const SVG_PATH = path.join(__dirname, 'logo-mark.svg');
 
-// Read the raw SVG
 const rawSvg = fs.readFileSync(SVG_PATH, 'utf8');
 
-// The SVG viewBox is "0 0 128 220" — a tall leaf shape.
-// We want to center it in a square canvas with generous padding so it looks
-// like a proper app icon (not edge-to-edge).
+// Brand colors
+const CREAM  = { r: 251, g: 247, b: 241, alpha: 1 };  // #fbf7f1 — page/splash bg
+const GREEN  = { r: 15,  g: 74,  b: 46,  alpha: 1 };   // #0f4a2e — brand green
 
-async function generateIcon(size, outputName, { background = { r: 0, g: 0, b: 0, alpha: 0 }, padding = 0.15 } = {}) {
-  // padding = fraction of size reserved on each side
+async function generateIcon(size, outputName, { background, padding = 0.15 } = {}) {
   const pad = Math.round(size * padding);
-  const innerH = size - pad * 2;  // available height for the leaf
-  // viewBox is 128 wide × 220 tall, so aspect = 128/220 ≈ 0.582
-  const aspect = 128 / 220;
+  const innerH = size - pad * 2;
+  const aspect = 128 / 220;  // viewBox ratio
   const innerW = Math.round(innerH * aspect);
 
-  // Render SVG at the inner dimensions (sharp will rasterise at this res)
   const svgWithDims = rawSvg.replace(
     '<svg ',
     `<svg width="${innerW}" height="${innerH}" `
   );
 
   const leafBuffer = await sharp(Buffer.from(svgWithDims))
-    .resize(innerW, innerH, { fit: 'contain', background })
+    .resize(innerW, innerH, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png({ quality: 100, compressionLevel: 9 })
     .toBuffer();
 
-  // Composite onto a square canvas
   const offsetX = Math.round((size - innerW) / 2);
   const offsetY = pad;
 
@@ -59,39 +61,36 @@ async function generateIcon(size, outputName, { background = { r: 0, g: 0, b: 0,
 }
 
 async function main() {
-  // Ensure output dir exists
   if (!fs.existsSync(ICONS_DIR)) fs.mkdirSync(ICONS_DIR, { recursive: true });
 
-  // ── Android / general PWA icons (fully transparent background) ──
+  // ── "any" icons — cream background (#fbf7f1) ──
+  // Matches manifest background_color → splash screen looks seamless
   await generateIcon(192, 'icon-192x192.png', {
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
+    background: CREAM,
     padding: 0.12
   });
 
   await generateIcon(512, 'icon-512x512.png', {
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
+    background: CREAM,
     padding: 0.12
   });
 
-  // ── Apple Touch Icon ──
-  // iOS always clips to a rounded-rect and does NOT support transparency.
-  // We use a rich forest green (#0f4a2e) that matches the brand.
+  // ── Apple Touch Icon — cream background ──
   await generateIcon(180, 'apple-touch-icon.png', {
-    background: { r: 15, g: 74, b: 46, alpha: 1 },
-    padding: 0.18
+    background: CREAM,
+    padding: 0.15
   });
 
-  // ── Maskable icon for Android adaptive icons ──
-  // Needs a solid background + extra safe-zone padding (≥10% per spec, we use 20%)
+  // ── Maskable icon — forest green for adaptive icon ring ──
   await generateIcon(512, 'icon-maskable-512x512.png', {
-    background: { r: 15, g: 74, b: 46, alpha: 1 },
+    background: GREEN,
     padding: 0.22
   });
 
-  console.log('\n🎉 All icons generated successfully!');
+  console.log('\n🎉 All icons generated!');
 }
 
 main().catch(err => {
-  console.error('Icon generation failed:', err);
+  console.error('Failed:', err);
   process.exit(1);
 });
