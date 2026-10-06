@@ -22,6 +22,7 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 
 import { routing } from '@/i18n/routing';
 import LocaleProvider from '@/providers/locale-provider';
+import ServiceWorkerRegistrar from '@/components/pwa/ServiceWorkerRegistrar';
 
 import '../../styles/landingpage.css';
 import '../../styles/navbar.css';
@@ -37,6 +38,16 @@ export function generateStaticParams() {
 }
 
 /**
+ * Configure viewport for mobile/desktop PWA experience and theme colour
+ */
+export const viewport = {
+  themeColor: '#0f4a2e',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
+/**
  * Build localized <head> metadata per request. SEO crawlers see the
  * title/description in the user's language; OG cards do too.
  */
@@ -50,6 +61,17 @@ export async function generateMetadata({ params }) {
     title: t('title'),
     description: t('description'),
     keywords: ['agriculture', 'AI', 'farming', 'precision agriculture', 'FarmXpert'],
+    // PWA manifest
+    manifest: '/manifest.webmanifest',
+    // iOS PWA support
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'FarmXpert',
+    },
+    icons: {
+      apple: '/icons/apple-touch-icon.png',
+    },
     openGraph: {
       title: t('ogTitle'),
       description: t('ogDescription'),
@@ -108,6 +130,7 @@ export default async function LocaleLayout({ children, params }) {
       <body>
         <LocaleProvider locale={locale} messages={messages}>
           <div id="site-root">{children}</div>
+          <ServiceWorkerRegistrar />
         </LocaleProvider>
       </body>
     </html>
