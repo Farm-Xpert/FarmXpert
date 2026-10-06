@@ -1,6 +1,7 @@
 # FarmXpert AI backend (FastAPI). Floors are the versions it is tested with.
 fastapi>=0.115
 uvicorn[standard]>=0.30
+python-multipart>=0.0.18
 pydantic>=2.8
 httpx[http2]>=0.27        # http2 pulls in h2: one reused connection to the LLM API
 python-dotenv>=1.0
