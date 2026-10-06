@@ -20,14 +20,14 @@ import traceback
 from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List
 
-from AI_Backend.agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
-from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
+from agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
+from agents.farm_operations_automation.task_scheduler.config import (
     CATEGORY_CONFIG,
     DEPENDENCY_GAP_HOURS,
     MAX_TASKS_PER_DAY,
     MAX_WORK_HOURS_PER_DAY,
 )
-from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import (
+from agents.farm_operations_automation.task_scheduler.playbook import (
     CROP_PLAYBOOK,
     build_guidance,
     known_crops,

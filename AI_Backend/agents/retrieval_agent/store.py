@@ -30,7 +30,7 @@ from typing import List, Optional, Sequence
 
 logger = logging.getLogger("farmxpert.retrieval.store")
 
-from AI_Backend.agents.retrieval_agent.config import EMBED_DIM, EMBED_MODEL, VECTOR_TABLE as TABLE
+from agents.retrieval_agent.config import EMBED_DIM, EMBED_MODEL, VECTOR_TABLE as TABLE
 
 
 @dataclass
@@ -48,7 +48,7 @@ class Chunk:
 def _session_factory():
     """This service's own small pool - the knowledge index is the one table
     the AI backend reads directly (see AI_Backend/core/database.py)."""
-    from AI_Backend.core import database
+    from core import database
     return database.session
 
 
@@ -59,11 +59,11 @@ async def available() -> bool:
     migration has not been run; that is a deployment state to report, not an
     error to raise at a farmer.
     """
-    from AI_Backend.core import database
+    from core import database
     if not database.configured():
         return False
     try:
-        from AI_Backend.orchestration import llm
+        from orchestration import llm
         if not llm.available():
             return False          # no embeddings, so no search is possible
     except ImportError:  # pragma: no cover

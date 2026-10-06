@@ -12,14 +12,14 @@ import statistics
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
-from AI_Backend.agents.supplychain_market_access.market_intelligence.config import (
+from agents.supplychain_market_access.market_intelligence.config import (
     FRESH_RECORD_WINDOW_DAYS,
     MARKETS_TO_RETURN,
     MIN_RECORDS_FOR_TREND,
     TREND_DECREASE_THRESHOLD,
     TREND_INCREASE_THRESHOLD,
 )
-from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+from agents.supplychain_market_access.market_intelligence.schemas import (
     MarketPrice,
     PriceRecord,
     PriceSummary,

@@ -106,7 +106,7 @@ def log_exception(request_id: str, agent: str, exc: BaseException) -> None:
 
 def safe_message(code: "Any", agent: str) -> str:
     """A sentence for the client that reveals nothing about internals."""
-    from AI_Backend.orchestration.contracts import ErrorCode
+    from orchestration.contracts import ErrorCode
     messages = {
         ErrorCode.TIMEOUT:           f"The {agent} service took too long to answer.",
         ErrorCode.EXTERNAL_SERVICE:  f"An external service used by {agent} is unavailable.",

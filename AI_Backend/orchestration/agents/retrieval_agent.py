@@ -1,7 +1,7 @@
 """
 Adapter — Retrieval Agent
 ==========================
-Registers `AI_Backend.agents.retrieval_agent` with the orchestrator.
+Registers `agents.retrieval_agent` with the orchestrator.
 
 The agent itself owns all the retrieval logic: the curated OKF layer, the
 vector index, the grading and the single bounded rewrite. This file only
@@ -19,9 +19,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, List
 
-from AI_Backend.agents.retrieval_agent.agent import RetrievalAgent
-from AI_Backend.agents.retrieval_agent.config import AGENT_VERSION, MAX_PASSAGES
-from AI_Backend.orchestration.contracts import (
+from agents.retrieval_agent.agent import RetrievalAgent
+from agents.retrieval_agent.config import AGENT_VERSION, MAX_PASSAGES
+from orchestration.contracts import (
     AgentSpec,
     Capability,
     Criticality,
@@ -29,7 +29,7 @@ from AI_Backend.orchestration.contracts import (
     NormalizedOutput,
     RetryPolicy,
 )
-from AI_Backend.orchestration.engine import AgentInputError, AgentOutputError
+from orchestration.engine import AgentInputError, AgentOutputError
 
 
 def build_retrieval() -> AgentSpec:

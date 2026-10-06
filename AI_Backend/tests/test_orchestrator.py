@@ -19,14 +19,14 @@ import time
 import traceback
 from typing import Any, Dict, List, Optional
 
-from AI_Backend.orchestration.aggregate import (
+from orchestration.aggregate import (
     overall_confidence,
     overall_status,
     provenance,
     summarise,
     to_skipped,
 )
-from AI_Backend.orchestration.contracts import (
+from orchestration.contracts import (
     AgentSpec,
     AgentStatus,
     Capability,
@@ -37,15 +37,15 @@ from AI_Backend.orchestration.contracts import (
     OrchestrationStatus,
     RetryPolicy,
 )
-from AI_Backend.orchestration.engine import (
+from orchestration.engine import (
     AgentInputError,
     AgentOutputError,
     ExecutionEngine,
     ExternalServiceError,
 )
-from AI_Backend.orchestration.planner import Intent, Planner
-from AI_Backend.orchestration.registry import AgentRegistry, RegistryError
-from AI_Backend.orchestration.toon import encode, estimate_tokens
+from orchestration.planner import Intent, Planner
+from orchestration.registry import AgentRegistry, RegistryError
+from orchestration.toon import encode, estimate_tokens
 
 logging.disable(logging.CRITICAL)
 
@@ -621,7 +621,7 @@ def test_confidence_is_the_weakest_link():
 
 @case
 def test_provenance_lists_only_successful_agents():
-    from AI_Backend.orchestration.contracts import AgentResult
+    from orchestration.contracts import AgentResult
 
     results = {
         "weather_watcher": AgentResult("weather_watcher", "1", AgentStatus.SUCCESS, 5.0,
@@ -636,7 +636,7 @@ def test_provenance_lists_only_successful_agents():
 
 @case
 def test_conflict_between_irrigation_and_rain_is_detected():
-    from AI_Backend.orchestration import conflicts as rules
+    from orchestration import conflicts as rules
 
     ctx = context()
     ctx.outputs["irrigation_planner"] = NormalizedOutput(data={
@@ -656,7 +656,7 @@ def test_conflict_between_irrigation_and_rain_is_detected():
 
 @case
 def test_light_rain_is_not_treated_as_a_conflict():
-    from AI_Backend.orchestration import conflicts as rules
+    from orchestration import conflicts as rules
 
     ctx = context()
     ctx.outputs["irrigation_planner"] = NormalizedOutput(data={
@@ -668,7 +668,7 @@ def test_light_rain_is_not_treated_as_a_conflict():
 
 @case
 def test_unresolvable_conflict_is_surfaced_not_decided():
-    from AI_Backend.orchestration import conflicts as rules
+    from orchestration import conflicts as rules
 
     ctx = context(resources={"irrigation_available": False})
     ctx.outputs["crop_predictor"] = NormalizedOutput(data={
@@ -683,7 +683,7 @@ def test_unresolvable_conflict_is_surfaced_not_decided():
 
 @case
 def test_a_broken_detector_cannot_break_the_response():
-    from AI_Backend.orchestration import conflicts as rules
+    from orchestration import conflicts as rules
 
     def exploding(_ctx):
         raise RuntimeError("detector bug")
@@ -697,7 +697,7 @@ def test_a_broken_detector_cannot_break_the_response():
 
 @case
 def test_summary_is_honest_about_what_is_missing():
-    from AI_Backend.orchestration.contracts import AgentResult
+    from orchestration.contracts import AgentResult
 
     results = {
         "weather_watcher": AgentResult("weather_watcher", "1", AgentStatus.SUCCESS, 5.0,
@@ -715,7 +715,7 @@ def test_summary_is_honest_about_what_is_missing():
 @case
 def test_lifecycle_events_carry_the_request_id():
     import logging as std_logging
-    from AI_Backend.orchestration.observability import Event, emit
+    from orchestration.observability import Event, emit
 
     captured: List[str] = []
 
@@ -746,7 +746,7 @@ def test_lifecycle_events_carry_the_request_id():
 @case
 def test_secrets_are_never_logged():
     import logging as std_logging
-    from AI_Backend.orchestration.observability import Event, emit
+    from orchestration.observability import Event, emit
 
     captured: List[str] = []
 
@@ -820,8 +820,8 @@ def test_toon_handles_awkward_input():
 
 @case
 def test_service_returns_partial_success_with_full_accounting():
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
-    from AI_Backend.orchestration.service import OrchestratorService
+    from orchestration.schemas import OrchestrationRequest
+    from orchestration.service import OrchestratorService
 
     registry = fresh(
         mock("weather"),
@@ -860,8 +860,8 @@ def test_service_returns_partial_success_with_full_accounting():
 
 @case
 def test_service_reports_validation_error_when_nothing_can_run():
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
-    from AI_Backend.orchestration.service import OrchestratorService
+    from orchestration.schemas import OrchestrationRequest
+    from orchestration.service import OrchestratorService
 
     registry = fresh(mock("weather", requires_context={"location"}))
     response = asyncio.run(OrchestratorService(registry=registry).run(
@@ -877,7 +877,7 @@ def test_service_reports_validation_error_when_nothing_can_run():
 def test_request_must_ask_for_something():
     from pydantic import ValidationError as PydanticError
 
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
+    from orchestration.schemas import OrchestrationRequest
     try:
         OrchestrationRequest(farm_id="F1")
         check("an empty request is rejected", False, "no error raised")
@@ -889,7 +889,7 @@ def test_request_must_ask_for_something():
 def test_agent_names_are_bounded_before_lookup():
     from pydantic import ValidationError as PydanticError
 
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
+    from orchestration.schemas import OrchestrationRequest
     for bad in ("../../etc/passwd", "a" * 100, "drop;table"):
         try:
             OrchestrationRequest(agents=[bad])
@@ -903,8 +903,8 @@ def test_agent_names_are_bounded_before_lookup():
 @case
 def test_the_real_catalog_is_valid():
     """The shipped agents form a usable graph - checked without running them."""
-    from AI_Backend.orchestration.agents import _BUILDERS, register_all
-    from AI_Backend.orchestration.registry import AgentRegistry
+    from orchestration.agents import _BUILDERS, register_all
+    from orchestration.registry import AgentRegistry
 
     registry = AgentRegistry()
     registered = register_all(registry)
@@ -928,8 +928,8 @@ def test_the_real_catalog_is_valid():
 
 @case
 def test_real_plan_orders_the_real_agents_correctly():
-    from AI_Backend.orchestration.agents import register_all
-    from AI_Backend.orchestration.registry import AgentRegistry
+    from orchestration.agents import register_all
+    from orchestration.registry import AgentRegistry
 
     registry = AgentRegistry()
     register_all(registry)
@@ -949,9 +949,9 @@ def test_real_plan_orders_the_real_agents_correctly():
 
 @case
 def test_mcp_tools_come_from_the_registry():
-    from AI_Backend.orchestration import mcp_server
-    from AI_Backend.orchestration.agents import register_all
-    from AI_Backend.orchestration.registry import REGISTRY
+    from orchestration import mcp_server
+    from orchestration.agents import register_all
+    from orchestration.registry import REGISTRY
 
     register_all()
     tools = {t["name"] for t in mcp_server.tool_definitions()}
@@ -1042,7 +1042,7 @@ def test_one_agent_failing_does_not_abandon_its_siblings():
 
 @case
 def test_projection_keeps_the_facts_and_drops_the_noise():
-    from AI_Backend.orchestration.prompt_view import project
+    from orchestration.prompt_view import project
 
     payload = {"task_scheduler": {
         "headline": "1 urgent job today", "do_first": "Irrigate",
@@ -1067,7 +1067,7 @@ def test_projection_keeps_the_facts_and_drops_the_noise():
 
 @case
 def test_projection_never_alters_a_number():
-    from AI_Backend.orchestration.prompt_view import project
+    from orchestration.prompt_view import project
 
     payload = {"irrigation_planner": {"irrigation_schedule": [
         {"date": "2026-06-15", "irrigation_required": True, "water_depth_mm": 29.97,
@@ -1081,7 +1081,7 @@ def test_projection_never_alters_a_number():
 
 @case
 def test_unknown_agent_is_projected_safely():
-    from AI_Backend.orchestration.prompt_view import project
+    from orchestration.prompt_view import project
 
     view = project({"future_agent": {"finding": "aphids", "severity": 6.5,
                                      "debug": {"x": 1}, "agent_version": "0.1"}})
@@ -1126,8 +1126,8 @@ def test_toon_still_tabulates_genuinely_flat_rows():
 def test_fact_format_is_chosen_by_measurement():
     import json as json_module
 
-    from AI_Backend.orchestration.llm import build_facts
-    from AI_Backend.orchestration.prompt_view import project
+    from orchestration.llm import build_facts
+    from orchestration.prompt_view import project
 
     tabular = {"weather_watcher": {"forecast": [
         {"date": f"2026-06-{d}", "temp_min_c": 25.0, "temp_max_c": 34.0,
@@ -1151,7 +1151,7 @@ def test_fact_format_is_chosen_by_measurement():
 @case
 def test_prompt_cost_stays_bounded_for_a_full_farm_day():
     """A realistic all-agent payload must not blow the prompt budget."""
-    from AI_Backend.orchestration.llm import build_facts
+    from orchestration.llm import build_facts
 
     results = {
         "weather_watcher": {"forecast_short_term": [

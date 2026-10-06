@@ -43,8 +43,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
-from AI_Backend.agents.crop_planning_growth.weather_watcher import agromet
-from AI_Backend.agents.crop_planning_growth.weather_watcher.config import (
+from agents.crop_planning_growth.weather_watcher import agromet
+from agents.crop_planning_growth.weather_watcher.config import (
     ALERT_THRESHOLDS,
     CACHE_COORD_DECIMALS,
     CACHE_MAX_ENTRIES,

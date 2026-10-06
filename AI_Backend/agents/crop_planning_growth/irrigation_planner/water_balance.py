@@ -20,7 +20,7 @@ import math
 from datetime import date
 from typing import Optional
 
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner.config import (
     MAX_THETA_ABOVE_FC,
     RAIN_EFFECTIVE_FRACTION,
     RAIN_RUNOFF_ABOVE_MM,

@@ -10,7 +10,7 @@ import sys
 
 import httpx
 
-from AI_Backend.orchestration import llm, usage
+from orchestration import llm, usage
 
 PASSED, FAILED = [], []
 
@@ -128,8 +128,8 @@ check("an unusable 200 still raises for the caller", broken_raised)
 
 async def through_orchestrator():
     """The response carries usage for the whole request."""
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
-    from AI_Backend.orchestration.service import OrchestratorService
+    from orchestration.schemas import OrchestrationRequest
+    from orchestration.service import OrchestratorService
     os.environ["NVIDIA_API_KEY"] = "test-key"
     loop = asyncio.get_running_loop()
     llm._CLIENTS[loop] = httpx.AsyncClient(transport=httpx.MockTransport(provider))

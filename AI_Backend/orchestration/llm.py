@@ -50,9 +50,9 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import httpx
 
-from AI_Backend.orchestration import usage
-from AI_Backend.orchestration.prompt_view import project
-from AI_Backend.orchestration.toon import encode_agent_results, fit
+from orchestration import usage
+from orchestration.prompt_view import project
+from orchestration.toon import encode_agent_results, fit
 
 logger = logging.getLogger("farmxpert.orchestration.llm")
 
@@ -338,8 +338,8 @@ async def understand(query: str, hint_language: Optional[str] = None) -> Dict[st
     default rather than an error: the farmer still gets the knowledge path,
     in their own language.
     """
-    from AI_Backend.orchestration import languages
-    from AI_Backend.orchestration.planner import Intent
+    from orchestration import languages
+    from orchestration.planner import Intent
 
     detected = languages.detect(query, hint_language)
     result: Dict[str, Any] = {
@@ -380,7 +380,7 @@ async def understand(query: str, hint_language: Optional[str] = None) -> Dict[st
 
 
 def _with_tier(result: Dict[str, Any]) -> Dict[str, Any]:
-    from AI_Backend.orchestration import languages
+    from orchestration import languages
     result["tier"] = languages.get(result["language"]).tier
     return result
 
@@ -520,7 +520,7 @@ def answer_prompt(query: Optional[str], results: Dict[str, Any], *,
                   warnings: Optional[List[str]] = None,
                   history: Optional[List[Dict[str, str]]] = None) -> Tuple[str, str]:
     """(system, user) for the answer. Shared by the blocking and streaming paths."""
-    from AI_Backend.orchestration import languages
+    from orchestration import languages
 
     facts, fact_format = build_facts(results)
     extra: Dict[str, Any] = {}

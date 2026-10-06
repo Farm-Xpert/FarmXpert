@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 from typing import Dict, Iterable, List, Optional, Sequence, Set
 
-from AI_Backend.orchestration.contracts import AgentSpec, Capability
+from orchestration.contracts import AgentSpec, Capability
 
 logger = logging.getLogger("farmxpert.orchestration.registry")
 

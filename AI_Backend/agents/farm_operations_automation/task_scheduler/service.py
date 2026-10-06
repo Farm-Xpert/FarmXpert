@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
+from agents.farm_operations_automation.task_scheduler.config import (
     AGENT_VERSION,
     CATEGORY_CONFIG,
     DEFAULT_PHI_DAYS,
@@ -60,8 +60,8 @@ from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
     WEIGHT_RISK,
     WEIGHT_URGENCY,
 )
-from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import build_guidance
-from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+from agents.farm_operations_automation.task_scheduler.playbook import build_guidance
+from agents.farm_operations_automation.task_scheduler.schemas import (
     AgentSource,
     ConflictRecord,
     CropSelectorAgentData,

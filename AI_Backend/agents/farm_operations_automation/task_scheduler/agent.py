@@ -17,16 +17,16 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
+from agents.farm_operations_automation.task_scheduler.config import (
     AGENT_ID,
     AGENT_VERSION,
 )
-from AI_Backend.agents.farm_operations_automation.task_scheduler.inputs import normalise
-from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+from agents.farm_operations_automation.task_scheduler.inputs import normalise
+from agents.farm_operations_automation.task_scheduler.schemas import (
     SchedulerInput,
     TaskPlan,
 )
-from AI_Backend.agents.farm_operations_automation.task_scheduler.service import (
+from agents.farm_operations_automation.task_scheduler.service import (
     TaskSchedulerService,
 )
 

@@ -15,8 +15,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Sequence, Set
 
-from AI_Backend.orchestration.contracts import AgentSpec, Capability, ExecutionContext
-from AI_Backend.orchestration.registry import AgentRegistry
+from orchestration.contracts import AgentSpec, Capability, ExecutionContext
+from orchestration.registry import AgentRegistry
 
 
 class Intent(str, Enum):

@@ -155,7 +155,7 @@ def _scalar(value: Any) -> str:
 
 def estimate_tokens(text: str) -> int:
     """Token count for prompt budgets; script-aware, so Hindi is not under-counted."""
-    from AI_Backend.orchestration.usage import count_tokens
+    from orchestration.usage import count_tokens
     return max(1, count_tokens(text))
 
 

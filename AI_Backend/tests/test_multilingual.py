@@ -17,7 +17,7 @@ from pathlib import Path
 
 import httpx
 
-from AI_Backend.orchestration import languages, llm
+from orchestration import languages, llm
 
 PASSED, FAILED = [], []
 EVAL = json.loads((Path(__file__).parent / "data" / "multilingual_eval.json").read_text("utf-8"))
@@ -130,9 +130,9 @@ with env():
 
 # ── retrieval: English rendering reaches both layers ────────────────────────
 
-from AI_Backend.agents.retrieval_agent import tools  # noqa: E402
-from AI_Backend.agents.retrieval_agent.schemas import Passage, RetrievalRequest, Source  # noqa: E402
-from AI_Backend.agents.retrieval_agent.service import RetrievalService  # noqa: E402
+from agents.retrieval_agent import tools  # noqa: E402
+from agents.retrieval_agent.schemas import Passage, RetrievalRequest, Source  # noqa: E402
+from agents.retrieval_agent.service import RetrievalService  # noqa: E402
 
 
 def passage(doc, sim):
@@ -202,9 +202,9 @@ def streaming_provider(request: httpx.Request) -> httpx.Response:
 
 
 async def collect_stream():
-    from AI_Backend.orchestration.agents import register_all
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
-    from AI_Backend.orchestration.service import OrchestratorService
+    from orchestration.agents import register_all
+    from orchestration.schemas import OrchestrationRequest
+    from orchestration.service import OrchestratorService
     register_all()
     events = []
     async for name, payload in OrchestratorService().stream(OrchestrationRequest(

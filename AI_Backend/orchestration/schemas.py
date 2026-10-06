@@ -15,13 +15,13 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from AI_Backend.orchestration.contracts import (
+from orchestration.contracts import (
     AgentStatus,
     Capability,
     ErrorCode,
     OrchestrationStatus,
 )
-from AI_Backend.orchestration.planner import Intent
+from orchestration.planner import Intent
 
 
 # ── request ─────────────────────────────────────────────────────────────────

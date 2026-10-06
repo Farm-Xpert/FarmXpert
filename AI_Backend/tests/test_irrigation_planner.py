@@ -13,11 +13,11 @@ import logging
 import sys
 from datetime import date
 
-from AI_Backend.agents.crop_planning_growth.irrigation_planner import water_balance as wb
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner import water_balance as wb
+from agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
+from agents.crop_planning_growth.irrigation_planner.config import (
     CROP_CONFIG, EMERGENCY_DEPLETION, SOIL_CONFIG)
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import (
+from agents.crop_planning_growth.irrigation_planner.schemas import (
     IrrigationPlannerResponse)
 
 AGENT = IrrigationAgent()
@@ -293,9 +293,9 @@ async def case_days_after_sowing_sets_the_stage():
 # Contract: schema, orchestrator, scheduler, API
 # ---------------------------------------------------------------------------
 async def case_output_validates_and_keeps_scheduler_fields():
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+    from agents.farm_operations_automation.task_scheduler.schemas import (
         IrrigationAgentData)
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters import irrigation_output_to_scheduler_block
+    from agents.farm_operations_automation.task_scheduler.adapters import irrigation_output_to_scheduler_block
 
     p = await plan(crop="cotton", growth_stage="flowering", soil_type="loamy",
                    soil_moisture_percent=15.0, farm_area_hectares=2.0)
@@ -339,7 +339,7 @@ def case_router_plans_without_a_database():
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
-    from AI_Backend.routers import irrigation_planner as router_module
+    from routers import irrigation_planner as router_module
 
     app = FastAPI()
     app.include_router(router_module.router)

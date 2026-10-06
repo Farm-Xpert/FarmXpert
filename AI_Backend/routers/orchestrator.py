@@ -20,15 +20,15 @@ from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile, 
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
-from AI_Backend.orchestration.agents import register_all
-from AI_Backend.orchestration.contracts import OrchestrationStatus
-from AI_Backend.orchestration.registry import REGISTRY, RegistryError
-from AI_Backend.orchestration.schemas import (
+from orchestration.agents import register_all
+from orchestration.contracts import OrchestrationStatus
+from orchestration.registry import REGISTRY, RegistryError
+from orchestration.schemas import (
     OrchestrationRequest,
     OrchestrationResponse,
     ValidationErrorResponse,
 )
-from AI_Backend.orchestration.service import OrchestratorService
+from orchestration.service import OrchestratorService
 
 router = APIRouter(prefix="/orchestrator", tags=["Orchestrator"])
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ async def execute_stream(request: OrchestrationRequest) -> StreamingResponse:
 )
 async def voice_stream(audio: UploadFile = File(...), request: str = Form(...),
                        audio_seconds: Optional[float] = Form(None)) -> StreamingResponse:
-    from AI_Backend.orchestration import speech
+    from orchestration import speech
 
     limit = int(os.getenv("VOICE_MAX_BYTES", str(2 * 1024 * 1024)))
     # Read one byte past the limit: enough to know it is too big, without
@@ -163,7 +163,7 @@ async def set_enabled(name: str, enabled: bool = True) -> dict:
 
 @router.get("/health", summary="Liveness and catalog health")
 async def health() -> dict:
-    from AI_Backend.orchestration import llm
+    from orchestration import llm
     return {
         "status": "ok",
         "agents_registered": len(REGISTRY.all(include_disabled=True)),
@@ -177,7 +177,7 @@ async def health() -> dict:
 @router.get("/knowledge", summary="What the curated knowledge bundle holds")
 async def knowledge() -> dict:
     """The OKF map: the cheap overview an agent reads before retrieving."""
-    from AI_Backend.agents.retrieval_agent.okf import get_bundle
+    from agents.retrieval_agent.okf import get_bundle
 
     bundle = get_bundle()
     return {"documents": len(bundle), "map": bundle.map()}
@@ -190,6 +190,6 @@ async def reindex() -> dict:
     Run on deploy or after editing the bundle - never during a farmer's
     request. Safe to repeat: chunk ids are stable, so this updates in place.
     """
-    from AI_Backend.agents.retrieval_agent.indexer import reindex as run_reindex
+    from agents.retrieval_agent.indexer import reindex as run_reindex
 
     return await run_reindex()

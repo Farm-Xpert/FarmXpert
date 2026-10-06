@@ -20,7 +20,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from AI_Backend.orchestration.contracts import (
+from orchestration.contracts import (
     AgentSpec,
     Capability,
     Criticality,
@@ -28,7 +28,7 @@ from AI_Backend.orchestration.contracts import (
     NormalizedOutput,
     RetryPolicy,
 )
-from AI_Backend.orchestration.engine import AgentInputError, AgentOutputError
+from orchestration.engine import AgentInputError, AgentOutputError
 
 _UTC_NOW = lambda: datetime.now(timezone.utc)  # noqa: E731
 
@@ -38,8 +38,8 @@ _UTC_NOW = lambda: datetime.now(timezone.utc)  # noqa: E731
 # provider blip is transient and a farmer's whole plan depends on the forecast.
 
 def build_weather() -> AgentSpec:
-    from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
-    from AI_Backend.agents.crop_planning_growth.weather_watcher.config import AGENT_VERSION
+    from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+    from agents.crop_planning_growth.weather_watcher.config import AGENT_VERSION
 
     agent = WeatherAgent("weather")
 
@@ -92,8 +92,8 @@ def build_weather() -> AgentSpec:
 # short timeout. It fails only on input it cannot use.
 
 def build_soil() -> AgentSpec:
-    from AI_Backend.agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
-    from AI_Backend.agents.crop_planning_growth.soil_health.config import AGENT_VERSION
+    from agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
+    from agents.crop_planning_growth.soil_health.config import AGENT_VERSION
 
     agent = SoilHealthAgent()
 
@@ -143,8 +143,8 @@ def build_soil() -> AgentSpec:
 # agent still plans, just without salinity and pH adjustments.
 
 def build_irrigation() -> AgentSpec:
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import AGENT_VERSION
+    from agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
+    from agents.crop_planning_growth.irrigation_planner.config import AGENT_VERSION
 
     agent = IrrigationAgent()
 
@@ -225,8 +225,8 @@ def build_irrigation() -> AgentSpec:
 # the first time for a given area, so one retry covers a cold archive fetch.
 
 def build_crop() -> AgentSpec:
-    from AI_Backend.agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
-    from AI_Backend.agents.crop_planning_growth.crop_prediction.config import AGENT_VERSION
+    from agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
+    from agents.crop_planning_growth.crop_prediction.config import AGENT_VERSION
 
     agent = CropPredictionAgent()
 
@@ -250,7 +250,7 @@ def build_crop() -> AgentSpec:
         raw = response.model_dump(mode="json") if hasattr(response, "model_dump") else response
         # A farmer who asks for fruit gets a fruit list next to the model's ranking
         # (which stays exactly as scored). See horticulture.py.
-        from AI_Backend.agents.crop_planning_growth.crop_prediction import horticulture
+        from agents.crop_planning_growth.crop_prediction import horticulture
         wish = horticulture.detect_preference(context.farmer_query, (context.extras or {}).get("query_en"))
         if wish and isinstance(raw, dict):
             block = raw.get("result") if isinstance(raw.get("result"), dict) else raw
@@ -307,8 +307,8 @@ def build_crop() -> AgentSpec:
 # optional: a plan from weather alone is still worth showing a farmer.
 
 def build_scheduler() -> AgentSpec:
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.config import AGENT_VERSION
+    from agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
+    from agents.farm_operations_automation.task_scheduler.config import AGENT_VERSION
 
     agent = TaskSchedulerAgent()
 
@@ -380,9 +380,9 @@ def build_scheduler() -> AgentSpec:
 # farmer's work plan must not depend on a price server being up.
 
 def build_market() -> AgentSpec:
-    from AI_Backend.agents.supplychain_market_access.market_intelligence.agent import run_market_agent
-    from AI_Backend.agents.supplychain_market_access.market_intelligence.config import AGENT_VERSION
-    from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+    from agents.supplychain_market_access.market_intelligence.agent import run_market_agent
+    from agents.supplychain_market_access.market_intelligence.config import AGENT_VERSION
+    from agents.supplychain_market_access.market_intelligence.schemas import (
         MarketQueryInput,
     )
 

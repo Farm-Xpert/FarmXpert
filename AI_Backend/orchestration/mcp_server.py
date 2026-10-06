@@ -30,11 +30,11 @@ import logging
 import sys
 from typing import Any, Dict, List, Optional
 
-from AI_Backend.orchestration.agents import register_all
-from AI_Backend.orchestration.contracts import AgentSpec, ExecutionContext
-from AI_Backend.orchestration.registry import REGISTRY
-from AI_Backend.orchestration.schemas import OrchestrationRequest
-from AI_Backend.orchestration.service import OrchestratorService
+from orchestration.agents import register_all
+from orchestration.contracts import AgentSpec, ExecutionContext
+from orchestration.registry import REGISTRY
+from orchestration.schemas import OrchestrationRequest
+from orchestration.service import OrchestratorService
 
 logger = logging.getLogger("farmxpert.mcp")
 
@@ -116,7 +116,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 async def _orchestrate(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """The full pipeline, through the same service the HTTP API uses."""
-    from AI_Backend.orchestration.planner import Intent
+    from orchestration.planner import Intent
 
     request: Dict[str, Any] = {
         "query": arguments.get("query"),
@@ -152,8 +152,8 @@ async def _single_agent(spec: AgentSpec, arguments: Dict[str, Any]) -> Dict[str,
     It runs through the same engine as any other execution, so an MCP caller
     gets the same timeout, retry and output-validation guarantees as the API.
     """
-    from AI_Backend.orchestration.engine import ExecutionEngine
-    from AI_Backend.orchestration.planner import ExecutionPlan
+    from orchestration.engine import ExecutionEngine
+    from orchestration.planner import ExecutionPlan
 
     context = _context_from(arguments)
     missing = spec.missing_context(context.available_context())

@@ -24,7 +24,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
-from AI_Backend.agents.crop_planning_growth.weather_watcher.config import AGROMET
+from agents.crop_planning_growth.weather_watcher.config import AGROMET
 
 _A = AGROMET
 

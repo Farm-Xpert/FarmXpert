@@ -19,9 +19,9 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.retrieval_agent.config import AGENT_ID, AGENT_VERSION
-from AI_Backend.agents.retrieval_agent.schemas import RetrievalRequest, RetrievalResult
-from AI_Backend.agents.retrieval_agent.service import RetrievalService
+from agents.retrieval_agent.config import AGENT_ID, AGENT_VERSION
+from agents.retrieval_agent.schemas import RetrievalRequest, RetrievalResult
+from agents.retrieval_agent.service import RetrievalService
 
 logger = logging.getLogger("farmxpert.retrieval")
 
@@ -55,8 +55,8 @@ class RetrievalAgent:
 
     def health(self) -> dict:
         """What the agent can reach right now, for a readiness probe."""
-        from AI_Backend.agents.retrieval_agent.okf import get_bundle
-        from AI_Backend.orchestration import llm
+        from agents.retrieval_agent.okf import get_bundle
+        from orchestration import llm
 
         bundle = get_bundle()
         return {

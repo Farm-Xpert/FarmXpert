@@ -26,7 +26,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
+from agents.farm_operations_automation.task_scheduler.config import (
     DEFAULT_HORIZON_DAYS,
     DEFAULT_WORK_END,
     DEFAULT_WORK_START,
@@ -90,7 +90,7 @@ def _convert(block_key: str, raw: Any, horizon: int,
     """Run the matching orchestrator adapter. A failure here loses one
     agent's contribution, never the whole plan."""
     try:
-        from AI_Backend.agents.farm_operations_automation.task_scheduler import adapters
+        from agents.farm_operations_automation.task_scheduler import adapters
     except ImportError:  # pragma: no cover - orchestrator not installed
         logger.warning("Orchestrator adapters unavailable; raw agent output ignored.")
         return None

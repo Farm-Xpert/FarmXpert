@@ -38,7 +38,7 @@ from typing import Any
 # Soil water properties and FAO-56 depletion fractions are owned by the
 # irrigation planner. Reading them here keeps one set of numbers for both
 # agents, so "dry" means the same thing to each.
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner.config import (
     CROP_ALIASES as _IRRIGATION_CROP_ALIASES,
     CROP_CONFIG as _IRRIGATION_CROPS,
     SOIL_ALIASES as _IRRIGATION_SOIL_ALIASES,

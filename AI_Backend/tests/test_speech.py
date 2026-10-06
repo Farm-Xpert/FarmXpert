@@ -12,7 +12,7 @@ import sys
 
 import httpx
 
-from AI_Backend.orchestration import llm, speech
+from orchestration import llm, speech
 
 PASSED, FAILED = [], []
 
@@ -131,9 +131,9 @@ def provider(request: httpx.Request) -> httpx.Response:
 
 
 async def voice_run(audio):
-    from AI_Backend.orchestration.agents import register_all
-    from AI_Backend.orchestration.schemas import OrchestrationRequest
-    from AI_Backend.orchestration.service import OrchestratorService
+    from orchestration.agents import register_all
+    from orchestration.schemas import OrchestrationRequest
+    from orchestration.service import OrchestratorService
     register_all()
     loop = asyncio.get_running_loop()
     llm._CLIENTS[loop] = httpx.AsyncClient(transport=httpx.MockTransport(provider))

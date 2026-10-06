@@ -19,22 +19,22 @@ import sys
 import traceback
 from typing import Any, List
 
-from AI_Backend.agents.retrieval_agent import tools
-from AI_Backend.agents.retrieval_agent.agent import RetrievalAgent
-from AI_Backend.agents.retrieval_agent.config import (
+from agents.retrieval_agent import tools
+from agents.retrieval_agent.agent import RetrievalAgent
+from agents.retrieval_agent.config import (
     GOOD_ENOUGH_SIMILARITY,
     MAX_REWRITES,
     OKF_DIR,
     OKF_EXCERPT_CHARS,
 )
-from AI_Backend.agents.retrieval_agent.okf import get_bundle
-from AI_Backend.agents.retrieval_agent.schemas import (
+from agents.retrieval_agent.okf import get_bundle
+from agents.retrieval_agent.schemas import (
     Passage,
     RetrievalRequest,
     RetrievalResult,
     Source,
 )
-from AI_Backend.agents.retrieval_agent.service import RetrievalService
+from agents.retrieval_agent.service import RetrievalService
 
 logging.disable(logging.CRITICAL)
 
@@ -76,11 +76,11 @@ def test_bundle_covers_every_crop_the_agents_know():
     The crop predictor can recommend guar; if the knowledge base has no guar
     page, a farmer asking about the crop it just recommended gets nothing.
     """
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+    from agents.crop_planning_growth.irrigation_planner.config import (
         CROP_CONFIG as IRRIGATION,
     )
-    from AI_Backend.agents.crop_planning_growth.soil_health.config import CROP_CONFIG as SOIL
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import (
+    from agents.crop_planning_growth.soil_health.config import CROP_CONFIG as SOIL
+    from agents.farm_operations_automation.task_scheduler.playbook import (
         CROP_PLAYBOOK,
     )
 
@@ -112,7 +112,7 @@ def test_published_facts_match_the_agent_configuration():
     Generated from the configs for exactly this reason; this test is what
     keeps a stale bundle from shipping after a config change.
     """
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+    from agents.crop_planning_growth.irrigation_planner.config import (
         CROP_CONFIG as IRRIGATION,
     )
 
@@ -138,7 +138,7 @@ def test_bundle_survives_a_missing_directory():
     """A broken bundle degrades the answer; it never takes the backend down."""
     import pathlib
 
-    from AI_Backend.agents.retrieval_agent.okf import OKFBundle
+    from agents.retrieval_agent.okf import OKFBundle
 
     empty = OKFBundle(pathlib.Path(__file__).parent / "does-not-exist")
     check("a missing bundle loads as empty", len(empty) == 0)
@@ -431,8 +431,8 @@ def test_health_reports_what_is_reachable():
 
 @case
 def test_the_orchestration_adapter_wraps_this_agent():
-    from AI_Backend.orchestration.agents.retrieval_agent import build_retrieval
-    from AI_Backend.orchestration.contracts import Capability, ExecutionContext
+    from orchestration.agents.retrieval_agent import build_retrieval
+    from orchestration.contracts import Capability, ExecutionContext
 
     spec = build_retrieval()
     check("it declares the knowledge capability",
@@ -451,8 +451,8 @@ def test_the_orchestration_adapter_wraps_this_agent():
 
 @case
 def test_the_adapter_rejects_a_malformed_result():
-    from AI_Backend.orchestration.agents.retrieval_agent import build_retrieval
-    from AI_Backend.orchestration.engine import AgentOutputError
+    from orchestration.agents.retrieval_agent import build_retrieval
+    from orchestration.engine import AgentOutputError
 
     spec = build_retrieval()
     for bad in ({"passages": "not a list", "passage_count": 0},
@@ -490,7 +490,7 @@ def test_no_tag_is_shared_by_every_crop():
 @case
 def test_every_crop_states_its_season():
     """A rabi and a kharif crop are managed differently; the page must say which."""
-    from AI_Backend.knowledge.build_okf import CROP_NOTES
+    from knowledge.build_okf import CROP_NOTES
 
     bundle = get_bundle()
     silent = []
@@ -557,7 +557,7 @@ def test_depletion_fraction_is_explained_not_just_printed():
 @case
 def test_facts_table_never_prints_none():
     """A config missing a value must drop the row, not publish the word None."""
-    from AI_Backend.knowledge.build_okf import _facts_section
+    from knowledge.build_okf import _facts_section
 
     partial = _facts_section({"soil": {"salinity": {"threshold": 2.5}},   # no slope
                               "irrigation": {"root_depth_m": None}})
@@ -573,7 +573,7 @@ def test_facts_table_never_prints_none():
 def test_builder_reports_crops_it_has_no_prose_for():
     """A crop an agent can name but the handbook cannot describe is a silent
     gap; the build must say so rather than quietly omit it."""
-    from AI_Backend.knowledge.build_okf import undocumented_agent_crops
+    from knowledge.build_okf import undocumented_agent_crops
 
     missing = undocumented_agent_crops()
     check("every agent crop has a handbook entry", not missing, missing)
@@ -589,7 +589,7 @@ def test_rebuilding_is_deterministic():
     import tempfile
     import pathlib as _pathlib
 
-    from AI_Backend.knowledge.build_okf import build
+    from knowledge.build_okf import build
 
     with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
         build(_pathlib.Path(first))
@@ -629,7 +629,7 @@ def test_no_page_says_the_same_thing_twice():
     same sentence in two slots and crowds out everything else."""
     import re
 
-    from AI_Backend.knowledge.build_okf import _key
+    from knowledge.build_okf import _key
 
     bundle = get_bundle()
     repeats = []
@@ -654,7 +654,7 @@ def test_no_page_says_the_same_thing_twice():
 def test_every_agent_rule_appears_on_its_crop_page():
     """The scheduler's rules are the operational truth. If prose could
     suppress one, editing a rule would silently fail to reach the handbook."""
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import (
+    from agents.farm_operations_automation.task_scheduler.playbook import (
         CROP_PLAYBOOK,
     )
 
@@ -675,7 +675,7 @@ def test_every_agent_rule_appears_on_its_crop_page():
 @case
 def test_deduplication_prefers_the_rule_over_the_prose():
     """Direction matters: a stale sentence must never hide a changed rule."""
-    from AI_Backend.knowledge.build_okf import _already_covered, _key
+    from knowledge.build_okf import _already_covered, _key
 
     # Lexical containment, so it catches a reworded duplicate - not a full
     # paraphrase. Where prose says the same thing in entirely different words

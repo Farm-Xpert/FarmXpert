@@ -17,7 +17,7 @@ import random
 import time
 from typing import Dict, List, Optional, Sequence
 
-from AI_Backend.orchestration.contracts import (
+from orchestration.contracts import (
     AgentResult,
     AgentSpec,
     AgentStatus,
@@ -27,8 +27,8 @@ from AI_Backend.orchestration.contracts import (
     NormalizedOutput,
     Timer,
 )
-from AI_Backend.orchestration.observability import Event, emit, log_exception, safe_message
-from AI_Backend.orchestration.planner import ExecutionPlan
+from orchestration.observability import Event, emit, log_exception, safe_message
+from orchestration.planner import ExecutionPlan
 
 DEFAULT_MAX_CONCURRENCY = 8
 # A farmer is waiting. Past this the answer is worth less than the wait, so

@@ -15,14 +15,14 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence
 
-from AI_Backend.agents.retrieval_agent.config import (
+from agents.retrieval_agent.config import (
     EMBED_MODEL,
     MAX_PASSAGES,
     MIN_SIMILARITY,
     OKF_EXCERPT_CHARS,
     OKF_MAX_DOCUMENTS,
 )
-from AI_Backend.agents.retrieval_agent.schemas import Passage, Source
+from agents.retrieval_agent.schemas import Passage, Source
 
 logger = logging.getLogger("farmxpert.retrieval")
 
@@ -35,13 +35,13 @@ def okf_map(crop: Optional[str] = None) -> List[dict]:
     Cheap by design. An agent reads this to learn what exists before deciding
     whether it needs to search anything.
     """
-    from AI_Backend.agents.retrieval_agent.okf import get_bundle
+    from agents.retrieval_agent.okf import get_bundle
     return get_bundle().map(crop=crop)
 
 
 def okf_document(doc_id: str) -> Optional[Passage]:
     """One curated document by id. Deterministic: no ranking, no similarity."""
-    from AI_Backend.agents.retrieval_agent.okf import get_bundle
+    from agents.retrieval_agent.okf import get_bundle
 
     document = get_bundle().get(doc_id)
     if document is None:
@@ -59,7 +59,7 @@ def okf_select(question: str, crop: Optional[str] = None,
     to be predictable and free. Anything needing fuzzy matching is the
     discovery layer's job.
     """
-    from AI_Backend.agents.retrieval_agent.okf import get_bundle
+    from agents.retrieval_agent.okf import get_bundle
 
     return [Passage(title=doc.title, text=doc.text[:OKF_EXCERPT_CHARS],
                     source=Source.OKF, doc_id=doc.id,
@@ -71,7 +71,7 @@ def okf_select(question: str, crop: Optional[str] = None,
 
 async def index_available() -> bool:
     """Is vector search usable right now? Never raises."""
-    from AI_Backend.agents.retrieval_agent import store
+    from agents.retrieval_agent import store
     try:
         return await store.available()
     except Exception as exc:  # noqa: BLE001 - availability is a hint, not a failure
@@ -82,8 +82,8 @@ async def index_available() -> bool:
 async def vector_search(question: str, crop: Optional[str] = None,
                         limit: int = MAX_PASSAGES) -> List[Passage]:
     """Nearest passages from the index, above the similarity floor."""
-    from AI_Backend.agents.retrieval_agent import store
-    from AI_Backend.orchestration import llm
+    from agents.retrieval_agent import store
+    from orchestration import llm
 
     vectors = await llm.embed([question], model=EMBED_MODEL, input_type="query")
     chunks = await store.search(vectors[0], limit=limit, crop=crop,
@@ -105,8 +105,8 @@ async def vector_search_multi(questions: Sequence[str], crop: Optional[str] = No
     """
     import asyncio
 
-    from AI_Backend.agents.retrieval_agent import store
-    from AI_Backend.orchestration import llm
+    from agents.retrieval_agent import store
+    from orchestration import llm
 
     phrasings = list(dict.fromkeys(q.strip() for q in questions if q and q.strip()))
     if not phrasings:
@@ -146,7 +146,7 @@ async def rewrite_query(question: str, crop: Optional[str] = None) -> Optional[s
     Returns None whenever the model is unavailable or unhelpful; the caller
     then keeps the original results rather than waiting on a second search.
     """
-    from AI_Backend.orchestration import llm
+    from orchestration import llm
 
     if not llm.available():
         return None

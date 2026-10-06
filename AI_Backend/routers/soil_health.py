@@ -2,9 +2,9 @@ import logging
 
 from fastapi import APIRouter, HTTPException, status
 
-from AI_Backend.agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
-from AI_Backend.agents.crop_planning_growth.soil_health.config import CROP_CONFIG, SOIL_TYPE_CONFIG
-from AI_Backend.agents.crop_planning_growth.soil_health.schemas import SoilHealthInput, SoilHealthOutput
+from agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
+from agents.crop_planning_growth.soil_health.config import CROP_CONFIG, SOIL_TYPE_CONFIG
+from agents.crop_planning_growth.soil_health.schemas import SoilHealthInput, SoilHealthOutput
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

@@ -20,16 +20,16 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.base.base_agent import BaseAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.base.base_agent import BaseAgent
+from agents.crop_planning_growth.irrigation_planner.config import (
     AGENT_ID,
     AGENT_VERSION,
 )
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import (
+from agents.crop_planning_growth.irrigation_planner.schemas import (
     IrrigationPlannerResponse,
     IrrigationRequest,
 )
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.service import (
+from agents.crop_planning_growth.irrigation_planner.service import (
     IrrigationService,
 )
 

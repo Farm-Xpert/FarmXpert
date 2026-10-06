@@ -11,8 +11,8 @@ from typing import List, Optional
 
 import httpx
 
-from AI_Backend.agents.supplychain_market_access.market_intelligence import model_loader
-from AI_Backend.agents.supplychain_market_access.market_intelligence.config import (
+from agents.supplychain_market_access.market_intelligence import model_loader
+from agents.supplychain_market_access.market_intelligence.config import (
     AGENT_ID,
     AGENT_VERSION,
     BACKEND_BASE_URL,
@@ -28,7 +28,7 @@ from AI_Backend.agents.supplychain_market_access.market_intelligence.config impo
     MANDI_PRICES_ENDPOINT,
     MIN_RECORDS_FOR_INSIGHTS,
 )
-from AI_Backend.agents.supplychain_market_access.market_intelligence.logic import (
+from agents.supplychain_market_access.market_intelligence.logic import (
     build_market_prices,
     build_price_summary,
     calculate_confidence,
@@ -36,7 +36,7 @@ from AI_Backend.agents.supplychain_market_access.market_intelligence.logic impor
     coefficient_of_variation,
     fresh_records_pct,
 )
-from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+from agents.supplychain_market_access.market_intelligence.schemas import (
     DataQuality,
     MarketInsights,
     PriceForecast,

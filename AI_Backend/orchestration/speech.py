@@ -36,7 +36,7 @@ from typing import AsyncIterator, Dict, List, Optional, Tuple
 
 import httpx
 
-from AI_Backend.orchestration import languages, usage
+from orchestration import languages, usage
 
 logger = logging.getLogger("farmxpert.orchestration.speech")
 
@@ -52,7 +52,7 @@ class SpeechError(RuntimeError):
 # ── configuration ───────────────────────────────────────────────────────────
 
 def _cfg() -> Dict[str, object]:
-    from AI_Backend.orchestration import llm
+    from orchestration import llm
     s = llm.settings()
     try:
         voices = json.loads(os.getenv("TTS_VOICES", "") or "{}")
@@ -128,7 +128,7 @@ async def transcribe(audio: bytes, mime: str, language_hint: Optional[str] = Non
     if code and code != "en":
         # A hint, not a constraint: a farmer may still switch language.
         data["language"] = code
-    from AI_Backend.orchestration import llm
+    from orchestration import llm
     try:
         response = await llm._client().post(
             f"{cfg['base_url']}/audio/transcriptions",
@@ -169,7 +169,7 @@ async def synthesize(text: str, language: str) -> bytes:
         "instructions": f"Speak in {lang.name}, warmly and clearly, at a calm pace, "
                         f"like an agricultural advisor talking to a farmer.",
     }
-    from AI_Backend.orchestration import llm
+    from orchestration import llm
     try:
         response = await llm._client().post(
             f"{cfg['base_url']}/audio/speech",

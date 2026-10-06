@@ -16,9 +16,9 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.crop_planning_growth.soil_health.config import AGENT_ID, AGENT_VERSION
-from AI_Backend.agents.crop_planning_growth.soil_health.schemas import SoilHealthInput
-from AI_Backend.agents.crop_planning_growth.soil_health.service import SoilHealthService
+from agents.crop_planning_growth.soil_health.config import AGENT_ID, AGENT_VERSION
+from agents.crop_planning_growth.soil_health.schemas import SoilHealthInput
+from agents.crop_planning_growth.soil_health.service import SoilHealthService
 
 logger = logging.getLogger("farmxpert.soil_health")
 

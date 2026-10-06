@@ -21,9 +21,9 @@ from urllib.parse import parse_qs
 
 import httpx
 
-from AI_Backend.agents.crop_planning_growth.weather_watcher import service as svc
-from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
-from AI_Backend.agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
+from agents.crop_planning_growth.weather_watcher import service as svc
+from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+from agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
 
 SECRET = "SECRET_KEY_do_not_leak_123"
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -388,9 +388,9 @@ async def case_accepts_orchestrator_and_scheduler_shapes():
 
 
 async def case_scheduler_adapter_accepts_the_output():
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+    from agents.farm_operations_automation.task_scheduler.schemas import (
         WeatherAgentData)
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters import weather_output_to_scheduler_block
+    from agents.farm_operations_automation.task_scheduler.adapters import weather_output_to_scheduler_block
 
     fresh()
     out = await FakeProviders(**{"open-meteo": lambda r: httpx.Response(
@@ -403,7 +403,7 @@ async def case_scheduler_adapter_accepts_the_output():
 
 
 async def case_crop_agent_uses_the_full_fourteen_days():
-    from AI_Backend.agents.crop_planning_growth.crop_prediction.agent import (
+    from agents.crop_planning_growth.crop_prediction.agent import (
         CropPredictionAgent)
 
     fresh()
@@ -420,7 +420,7 @@ def case_router_returns_422_and_503():
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
-    from AI_Backend.routers import weather_watcher as router_module
+    from routers import weather_watcher as router_module
 
     fresh()
     down = lambda r: httpx.Response(503)
@@ -444,7 +444,7 @@ def case_router_returns_422_and_503():
 # ---------------------------------------------------------------------------
 # Agrometeorology - formulas against published references
 # ---------------------------------------------------------------------------
-from AI_Backend.agents.crop_planning_growth.weather_watcher import agromet  # noqa: E402
+from agents.crop_planning_growth.weather_watcher import agromet  # noqa: E402
 
 
 def case_wet_bulb_matches_stull_2011():
@@ -633,7 +633,7 @@ async def case_dangerous_heat_index_warns_about_workers():
 
 
 def case_cached_result_drops_spray_windows_that_ended():
-    from AI_Backend.agents.crop_planning_growth.weather_watcher.service import (
+    from agents.crop_planning_growth.weather_watcher.service import (
         _drop_expired_spray_windows)
     now = (datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)).replace(tzinfo=None)
     past = {"end": (now - timedelta(hours=1)).isoformat(timespec="minutes")}
@@ -648,7 +648,7 @@ def case_api_response_keeps_the_advisory():
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
-    from AI_Backend.routers import weather_watcher as router_module
+    from routers import weather_watcher as router_module
 
     fresh()
     original = router_module.weather_agent

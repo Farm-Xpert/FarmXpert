@@ -80,8 +80,8 @@ def main() -> bool:
         return True
 
     old_mod, old_rule = load_pristine()
-    new_mod = importlib.import_module("AI_Backend.ml.crop_prediction.recommend")
-    new_rule = importlib.import_module("AI_Backend.ml.crop_prediction.rule_scorer")
+    new_mod = importlib.import_module("ml.crop_prediction.recommend")
+    new_rule = importlib.import_module("ml.crop_prediction.rule_scorer")
 
     total = bad = 0
     for region in REGIONS:

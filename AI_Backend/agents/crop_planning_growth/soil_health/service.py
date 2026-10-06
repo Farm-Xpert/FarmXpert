@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from AI_Backend.agents.crop_planning_growth.soil_health.config import (
+from agents.crop_planning_growth.soil_health.config import (
     ALERT_DEFINITIONS,
     ALERT_THRESHOLDS,
     CONFLICT_DETECTION_MAP,

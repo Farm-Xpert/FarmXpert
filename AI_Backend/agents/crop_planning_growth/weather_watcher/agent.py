@@ -29,13 +29,13 @@ from typing import Any, Optional
 import httpx
 from dotenv import load_dotenv
 
-from AI_Backend.agents.base.base_agent import BaseAgent
-from AI_Backend.agents.crop_planning_growth.weather_watcher.config import (
+from agents.base.base_agent import BaseAgent
+from agents.crop_planning_growth.weather_watcher.config import (
     AGENT_ID,
     AGENT_VERSION,
     OPENWEATHER_BASE_URL,
 )
-from AI_Backend.agents.crop_planning_growth.weather_watcher.service import (
+from agents.crop_planning_growth.weather_watcher.service import (
     WeatherService,
     cache_stats,
 )

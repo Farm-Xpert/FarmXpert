@@ -21,9 +21,9 @@ import uuid
 import weakref
 from typing import Any, List, Optional, Tuple
 
-from AI_Backend.ml.crop_prediction import FieldReading, explain
-from AI_Backend.ml.crop_prediction.features import SOIL_AWC
-from AI_Backend.ml.crop_prediction.recommend import (
+from ml.crop_prediction import FieldReading, explain
+from ml.crop_prediction.features import SOIL_AWC
+from ml.crop_prediction.recommend import (
     ML_WEIGHT,
     SUITABILITY_FLOOR,
     _load_prepared,
@@ -361,7 +361,7 @@ class CropPredictionService:
     async def _fetch_weather(self, lat: float, lon: float) -> dict:
         # Imported lazily so a weather-agent import error cannot take down
         # crop prediction, which works perfectly well without it.
-        from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+        from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
 
         agent = WeatherAgent(name="WeatherWatcher")
         return await agent.run({"lat": lat, "lon": lon})

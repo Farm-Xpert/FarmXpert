@@ -44,9 +44,9 @@ def strict_json(obj):
 # ─────────────────────────────────────────────────────────────────────────────
 # WEATHER - fabricated provider payloads for extreme climates
 # ─────────────────────────────────────────────────────────────────────────────
-from AI_Backend.agents.crop_planning_growth.weather_watcher import service as wsvc
-from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
-from AI_Backend.agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
+from agents.crop_planning_growth.weather_watcher import service as wsvc
+from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+from agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
 
 wsvc.HTTP_BACKOFF_SECONDS = 0.0
 
@@ -141,8 +141,8 @@ async def sweep_weather():
 # ─────────────────────────────────────────────────────────────────────────────
 # IRRIGATION
 # ─────────────────────────────────────────────────────────────────────────────
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
+from agents.crop_planning_growth.irrigation_planner.config import (
     CROP_CONFIG as IRR_CROPS, METHODS, SOIL_CONFIG as IRR_SOILS)
 
 IRR = IrrigationAgent()
@@ -218,10 +218,10 @@ async def sweep_irrigation(weather_outputs):
 # ─────────────────────────────────────────────────────────────────────────────
 # SOIL HEALTH
 # ─────────────────────────────────────────────────────────────────────────────
-from AI_Backend.agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
-from AI_Backend.agents.crop_planning_growth.soil_health.config import (
+from agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
+from agents.crop_planning_growth.soil_health.config import (
     CROP_CONFIG as SH_CROPS, SOIL_TYPE_CONFIG as SH_SOILS)
-from AI_Backend.agents.crop_planning_growth.soil_health.schemas import SoilHealthOutput
+from agents.crop_planning_growth.soil_health.schemas import SoilHealthOutput
 
 SH = SoilHealthAgent()
 EXTREMES = [
@@ -264,9 +264,9 @@ async def sweep_soil():
 # ─────────────────────────────────────────────────────────────────────────────
 # CROP PREDICTION (offline climate)
 # ─────────────────────────────────────────────────────────────────────────────
-from AI_Backend.agents.crop_planning_growth.crop_prediction import climate as cmod
-from AI_Backend.agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
-from AI_Backend.agents.crop_planning_growth.crop_prediction.schemas import (
+from agents.crop_planning_growth.crop_prediction import climate as cmod
+from agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
+from agents.crop_planning_growth.crop_prediction.schemas import (
     CropPredictionResponse, SoilType, Month)
 
 CROP = CropPredictionAgent()
@@ -317,9 +317,9 @@ async def sweep_crop():
 # CROSS-AGENT: names flowing between agents must be understood everywhere
 # ─────────────────────────────────────────────────────────────────────────────
 def cross_agent():
-    from AI_Backend.agents.crop_planning_growth.soil_health.service import canonical_crop, canonical_soil
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.service import IrrigationService
-    from AI_Backend.ml.crop_prediction.recommend import _load_prepared
+    from agents.crop_planning_growth.soil_health.service import canonical_crop, canonical_soil
+    from agents.crop_planning_growth.irrigation_planner.service import IrrigationService
+    from ml.crop_prediction.recommend import _load_prepared
 
     crops = sorted({p["crop"] for p in _load_prepared()})
     for crop in crops:

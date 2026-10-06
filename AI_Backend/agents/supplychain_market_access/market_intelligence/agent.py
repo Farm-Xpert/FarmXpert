@@ -6,14 +6,14 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+from agents.supplychain_market_access.market_intelligence.schemas import (
     MarketInsights,
     MarketQueryInput,
 )
-from AI_Backend.agents.supplychain_market_access.market_intelligence.service import (
+from agents.supplychain_market_access.market_intelligence.service import (
     generate_insights,
 )
-from AI_Backend.agents.supplychain_market_access.market_intelligence.config import (
+from agents.supplychain_market_access.market_intelligence.config import (
     AGENT_ID,
     AGENT_VERSION,
 )

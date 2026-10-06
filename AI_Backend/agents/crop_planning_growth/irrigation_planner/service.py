@@ -27,8 +27,8 @@ import math
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from AI_Backend.agents.crop_planning_growth.irrigation_planner import water_balance as wb
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner import water_balance as wb
+from agents.crop_planning_growth.irrigation_planner.config import (
     AGENT_ID,
     AGENT_VERSION,
     BASELINE_METHOD,
@@ -634,7 +634,7 @@ class IrrigationService:
             return {"forecast_short_term": [], "alerts": [],
                     "warnings": ["No location given - weather forecast not fetched."]}
         if self._weather_agent is None:
-            from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+            from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
             self._weather_agent = WeatherAgent("WeatherWatcher")
         try:
             return await self._weather_agent.run(location)
@@ -652,7 +652,7 @@ class IrrigationService:
         soil_raw = {**{k: data[k] for k in ("soil_type",) if data.get(k)},
                     "crop_type": data.get("crop"), **soil_raw}
         if self._soil_health_agent is None:
-            from AI_Backend.agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
+            from agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
             self._soil_health_agent = SoilHealthAgent()
         try:
             return await self._soil_health_agent.run(soil_raw)

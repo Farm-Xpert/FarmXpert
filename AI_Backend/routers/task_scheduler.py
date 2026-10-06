@@ -3,15 +3,15 @@ import logging
 from fastapi import APIRouter, HTTPException, status
 from pydantic import ValidationError
 
-from AI_Backend.agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
-from AI_Backend.agents.farm_operations_automation.task_scheduler.config import (
+from agents.farm_operations_automation.task_scheduler.agent import TaskSchedulerAgent
+from agents.farm_operations_automation.task_scheduler.config import (
     AGENT_VERSION,
     CATEGORY_CONFIG,
     DEFAULT_HORIZON_DAYS,
     MAX_HORIZON_DAYS,
 )
-from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import known_crops
-from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+from agents.farm_operations_automation.task_scheduler.playbook import known_crops
+from agents.farm_operations_automation.task_scheduler.schemas import (
     SchedulerInput,
     TaskPlan,
 )

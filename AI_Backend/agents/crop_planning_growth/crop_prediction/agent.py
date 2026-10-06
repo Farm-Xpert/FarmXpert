@@ -17,7 +17,7 @@ from typing import Any, Optional
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.base.base_agent import BaseAgent
+from agents.base.base_agent import BaseAgent
 
 from . import config
 from .model_loader import (

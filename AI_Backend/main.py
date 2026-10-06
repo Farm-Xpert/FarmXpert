@@ -2,9 +2,9 @@ import sys
 import os
 from pathlib import Path
 
-# Make both import styles resolve, so the app starts from the repository root
-# (`uvicorn AI_Backend.main:app`) or from this folder (`uvicorn main:app`):
-# the root for `AI_Backend.*`, this folder for `routers.*`.
+# Make both supported entrypoints work: `uvicorn AI_Backend.main:app` from the
+# repository root and `uvicorn main:app` from this folder. Backend modules use
+# this folder as their import root.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -33,12 +33,12 @@ async def lifespan(app: FastAPI):
     yield
     # Weather calls and the language model each share one pooled HTTP client;
     # close both cleanly so a reload does not leak sockets.
-    from AI_Backend.agents.crop_planning_growth.weather_watcher.service import (
+    from agents.crop_planning_growth.weather_watcher.service import (
         aclose_http_clients)
-    from AI_Backend.orchestration.llm import aclose_clients as aclose_llm_clients
+    from orchestration.llm import aclose_clients as aclose_llm_clients
     await aclose_http_clients()
     await aclose_llm_clients()
-    from AI_Backend.core.database import dispose as dispose_database
+    from core.database import dispose as dispose_database
     await dispose_database()
 
 

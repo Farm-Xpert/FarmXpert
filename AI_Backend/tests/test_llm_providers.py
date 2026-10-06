@@ -12,7 +12,7 @@ from contextlib import contextmanager
 
 import httpx
 
-from AI_Backend.orchestration import llm
+from orchestration import llm
 
 PASSED, FAILED = [], []
 _KEYS = ("LLM_BASE_URL", "LLM_API_KEY", "LLM_PROVIDER", "LLM_MODEL_UNDERSTAND", "LLM_MODEL_ANSWER",

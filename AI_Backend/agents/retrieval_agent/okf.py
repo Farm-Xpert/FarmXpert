@@ -40,8 +40,8 @@ from typing import Dict, Iterable, List, Optional, Sequence
 
 logger = logging.getLogger("farmxpert.retrieval.okf")
 
-from AI_Backend.agents.retrieval_agent.config import OKF_DIR as BUNDLE_DIR
-from AI_Backend.agents.retrieval_agent.config import OKF_INDEX_NAME as INDEX_NAME
+from agents.retrieval_agent.config import OKF_DIR as BUNDLE_DIR
+from agents.retrieval_agent.config import OKF_INDEX_NAME as INDEX_NAME
 
 
 @dataclass(frozen=True)

@@ -9,9 +9,9 @@ import logging
 import sys
 from datetime import date
 
-from AI_Backend.agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
-from AI_Backend.agents.crop_planning_growth.soil_health.config import CROP_CONFIG
-from AI_Backend.agents.crop_planning_growth.soil_health.schemas import SoilHealthOutput
+from agents.crop_planning_growth.soil_health.agent import SoilHealthAgent
+from agents.crop_planning_growth.soil_health.config import CROP_CONFIG
+from agents.crop_planning_growth.soil_health.schemas import SoilHealthOutput
 
 AGENT = SoilHealthAgent()
 GOOD = dict(soil_temperature=26.0, soil_ph=7.0, nitrogen=60.0, phosphorus=18.0,
@@ -195,12 +195,12 @@ def case_orchestrator_node_never_raises():
 
 def case_every_crop_has_irrigation_water_data():
     """Moisture stress uses the irrigation planner's FAO-56 p for the crop."""
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import CROP_CONFIG as IRR
+    from agents.crop_planning_growth.irrigation_planner.config import CROP_CONFIG as IRR
     return set(CROP_CONFIG) <= set(IRR)
 
 
 def case_every_crop_the_crop_agent_recommends_is_known():
-    from AI_Backend.agents.crop_planning_growth.soil_health.service import canonical_crop
+    from agents.crop_planning_growth.soil_health.service import canonical_crop
     return all(canonical_crop(c) for c in ("Ajwain", "Coriander (Leaves)", "Cotton", "Groundnut",
                                            "Guar", "Mango", "Potato", "Tomato", "White Peas"))
 
@@ -216,8 +216,8 @@ def case_output_validates_against_schema():
 
 
 def case_scheduler_adapter_accepts_the_output():
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import SoilHealthAgentData
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters import soil_health_output_to_scheduler_block
+    from agents.farm_operations_automation.task_scheduler.schemas import SoilHealthAgentData
+    from agents.farm_operations_automation.task_scheduler.adapters import soil_health_output_to_scheduler_block
 
     r = run(soil_moisture=14, soil_type="loamy", crop_type="maize", nitrogen=15)
     block = SoilHealthAgentData.model_validate(soil_health_output_to_scheduler_block(r))
@@ -225,7 +225,7 @@ def case_scheduler_adapter_accepts_the_output():
 
 
 def case_irrigation_now_uses_soil_health():
-    from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
+    from agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
 
     days = [{"date": date(2026, 9, 22 + i).isoformat(), "temp_min": 25, "temp_max": 34,
              "rainfall_mm": 0, "rain_probability_percent": 5, "humidity": 60, "wind_speed": 8,
@@ -242,7 +242,7 @@ def case_router_contract():
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
-    from AI_Backend.routers.soil_health import router
+    from routers.soil_health import router
 
     app = FastAPI()
     app.include_router(router, prefix="/api/soil-health")

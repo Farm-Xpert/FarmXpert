@@ -1,5 +1,5 @@
 """Fruit preferences: detected in the farmer's words, answered next to (never inside) the model's ranking."""
-from AI_Backend.agents.crop_planning_growth.crop_prediction import horticulture as h
+from agents.crop_planning_growth.crop_prediction import horticulture as h
 
 FIELD = {"ph": 7.6, "ec_ds_m": 0.6, "soil_type": "Black Cotton", "month": "September",
          "irrigation_available": True}

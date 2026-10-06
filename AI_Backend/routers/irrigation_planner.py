@@ -2,13 +2,13 @@ import logging
 
 from fastapi import APIRouter, HTTPException, status
 
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+from agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
+from agents.crop_planning_growth.irrigation_planner.config import (
     CROP_CONFIG,
     METHODS,
     SOIL_CONFIG,
 )
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import (
+from agents.crop_planning_growth.irrigation_planner.schemas import (
     IrrigationPlannerResponse,
     IrrigationRequest,
 )

@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from AI_Backend.orchestration.contracts import ExecutionContext
+from orchestration.contracts import ExecutionContext
 
 
 class Resolution(str, Enum):

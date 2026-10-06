@@ -15,8 +15,8 @@ import os
 import threading
 from typing import Iterable, Optional
 
-from AI_Backend.ml.crop_prediction import Recommender
-from AI_Backend.ml.crop_prediction.recommend import available_regions
+from ml.crop_prediction import Recommender
+from ml.crop_prediction.recommend import available_regions
 
 _MODEL_DIR = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)),

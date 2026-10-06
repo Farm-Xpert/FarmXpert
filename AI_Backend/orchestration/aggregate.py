@@ -16,16 +16,16 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Sequence
 
-from AI_Backend.orchestration.conflicts import Conflict
-from AI_Backend.orchestration.contracts import (
+from orchestration.conflicts import Conflict
+from orchestration.contracts import (
     AgentResult,
     AgentSpec,
     AgentStatus,
     Criticality,
     OrchestrationStatus,
 )
-from AI_Backend.orchestration.planner import ExecutionPlan, SkippedAgent
-from AI_Backend.orchestration.schemas import (
+from orchestration.planner import ExecutionPlan, SkippedAgent
+from orchestration.schemas import (
     AgentResultOut,
     ConflictOut,
     ExecutionOut,

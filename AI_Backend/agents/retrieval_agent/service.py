@@ -24,14 +24,14 @@ from __future__ import annotations
 import logging
 from typing import List, Optional
 
-from AI_Backend.agents.retrieval_agent import tools
-from AI_Backend.agents.retrieval_agent.config import (
+from agents.retrieval_agent import tools
+from agents.retrieval_agent.config import (
     GOOD_ENOUGH_SIMILARITY,
     MAX_REWRITES,
     OKF_ENOUGH_DOCUMENTS,
     OKF_MAX_DOCUMENTS,
 )
-from AI_Backend.agents.retrieval_agent.schemas import (
+from agents.retrieval_agent.schemas import (
     Passage,
     RetrievalRequest,
     RetrievalResult,

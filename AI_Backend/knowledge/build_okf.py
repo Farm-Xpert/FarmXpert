@@ -458,14 +458,14 @@ def _agent_facts(crop: str) -> Dict[str, Any]:
     """Facts pulled from the agents that already hold them."""
     facts: Dict[str, Any] = {}
     try:
-        from AI_Backend.agents.crop_planning_growth.soil_health.config import CROP_CONFIG as SOIL
+        from agents.crop_planning_growth.soil_health.config import CROP_CONFIG as SOIL
         entry = SOIL.get(crop)
         if entry:
             facts["soil"] = entry
     except ImportError:
         pass
     try:
-        from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+        from agents.crop_planning_growth.irrigation_planner.config import (
             CROP_CONFIG as IRRIGATION,
         )
         entry = IRRIGATION.get(crop)
@@ -474,7 +474,7 @@ def _agent_facts(crop: str) -> Dict[str, Any]:
     except ImportError:
         pass
     try:
-        from AI_Backend.agents.farm_operations_automation.task_scheduler.playbook import (
+        from agents.farm_operations_automation.task_scheduler.playbook import (
             CROP_PLAYBOOK,
         )
         entry = CROP_PLAYBOOK.get(crop)
@@ -754,10 +754,10 @@ def undocumented_agent_crops() -> List[str]:
 
     known: set = set()
     for module, attribute in (
-            ("AI_Backend.agents.crop_planning_growth.soil_health.config", "CROP_CONFIG"),
-            ("AI_Backend.agents.crop_planning_growth.irrigation_planner.config",
+            ("agents.crop_planning_growth.soil_health.config", "CROP_CONFIG"),
+            ("agents.crop_planning_growth.irrigation_planner.config",
              "CROP_CONFIG"),
-            ("AI_Backend.agents.farm_operations_automation.task_scheduler.playbook",
+            ("agents.farm_operations_automation.task_scheduler.playbook",
              "CROP_PLAYBOOK")):
         try:
             known |= set(getattr(importlib.import_module(module), attribute))

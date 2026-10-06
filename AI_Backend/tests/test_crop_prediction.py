@@ -21,16 +21,16 @@ import sys
 
 from pydantic import ValidationError
 
-from AI_Backend.agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
-from AI_Backend.agents.crop_planning_growth.crop_prediction.model_loader import (
+from agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
+from agents.crop_planning_growth.crop_prediction.model_loader import (
     UnknownRegionError,
     loaded_regions,
 )
-from AI_Backend.agents.crop_planning_growth.crop_prediction.schemas import (
+from agents.crop_planning_growth.crop_prediction.schemas import (
     CropPredictionRequest,
     PredictionStatus,
 )
-from AI_Backend.agents.crop_planning_growth.crop_prediction.service import clear_cache
+from agents.crop_planning_growth.crop_prediction.service import clear_cache
 
 AGENT = CropPredictionAgent()
 
@@ -40,7 +40,7 @@ AGENT = CropPredictionAgent()
 # ---------------------------------------------------------------------------
 import httpx  # noqa: E402
 
-from AI_Backend.agents.crop_planning_growth.crop_prediction import climate as climate_mod  # noqa: E402
+from agents.crop_planning_growth.crop_prediction import climate as climate_mod  # noqa: E402
 
 CLIMATE_RAIN = {"monsoon_mm_per_day": 7.0, "dry_mm_per_day": 0.1, "year_factors": None}
 
@@ -370,7 +370,7 @@ async def case_unmappable_soil_is_rejected_not_guessed():
 
 async def case_missing_month_defaults_to_current_month_with_a_warning():
     from datetime import date
-    from AI_Backend.agents.crop_planning_growth.crop_prediction.inputs import normalize
+    from agents.crop_planning_growth.crop_prediction.inputs import normalize
 
     payload, notes = normalize({"ph": 7.0, "ec_ds_m": 0.4, "moisture_percent": 25.0,
                                 "soil_type": "Loam"}, today=date(2026, 2, 10))
@@ -400,9 +400,9 @@ async def case_varieties_carry_sowing_window_and_duration():
 async def case_scheduler_block_validates_and_rescales():
     from datetime import date
 
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+    from agents.farm_operations_automation.task_scheduler.schemas import (
         CropSelectorAgentData)
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters import (
+    from agents.farm_operations_automation.task_scheduler.adapters import (
         crop_prediction_output_to_scheduler_block)
 
     out = await AGENT.run({
@@ -422,9 +422,9 @@ async def case_scheduler_block_validates_and_rescales():
 
 
 async def case_scheduler_gets_nothing_to_plant_on_a_refusal():
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.schemas import (
+    from agents.farm_operations_automation.task_scheduler.schemas import (
         CropSelectorAgentData)
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters import (
+    from agents.farm_operations_automation.task_scheduler.adapters import (
         crop_prediction_output_to_scheduler_block)
 
     refused = await AGENT.run({
@@ -442,7 +442,7 @@ async def case_scheduler_gets_nothing_to_plant_on_a_refusal():
 def case_sowing_window_wraps_the_year():
     from datetime import date
 
-    from AI_Backend.agents.farm_operations_automation.task_scheduler.adapters.crop_prediction_to_scheduler import (
+    from agents.farm_operations_automation.task_scheduler.adapters.crop_prediction_to_scheduler import (
         sowing_window_dates)
 
     inside = sowing_window_dates("November-January", date(2026, 12, 15))
@@ -466,9 +466,9 @@ def case_fast_feature_row_matches_add_engineered():
 
     import pandas as pd
 
-    from AI_Backend.ml.crop_prediction.features import (
+    from ml.crop_prediction.features import (
         MONTH_NUM, SOIL_ORDER, add_engineered)
-    from AI_Backend.ml.crop_prediction.recommend import (
+    from ml.crop_prediction.recommend import (
         build_feature_row, _season_for_month)
 
     for soil, month in itertools.product(SOIL_ORDER, list(MONTH_NUM)[::3]):
@@ -642,14 +642,14 @@ def case_contended_scoring_survives_a_second_event_loop():
 
 
 def config_max_concurrency() -> int:
-    from AI_Backend.agents.crop_planning_growth.crop_prediction import config
+    from agents.crop_planning_growth.crop_prediction import config
     return config.MAX_CONCURRENT_SCORINGS
 
 
 # ---------------------------------------------------------------------------
 # Agronomy - hand-computed answers
 # ---------------------------------------------------------------------------
-from AI_Backend.agents.crop_planning_growth.crop_prediction import agronomy  # noqa: E402
+from agents.crop_planning_growth.crop_prediction import agronomy  # noqa: E402
 
 
 def synthetic_climate(mm_per_day_by_year):

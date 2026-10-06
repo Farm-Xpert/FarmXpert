@@ -17,7 +17,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, List
 
-from AI_Backend.orchestration.agents.field_agents import (
+from orchestration.agents.field_agents import (
     build_crop,
     build_irrigation,
     build_market,
@@ -25,9 +25,9 @@ from AI_Backend.orchestration.agents.field_agents import (
     build_soil,
     build_weather,
 )
-from AI_Backend.orchestration.agents.retrieval_agent import build_retrieval
-from AI_Backend.orchestration.contracts import AgentSpec
-from AI_Backend.orchestration.registry import REGISTRY, AgentRegistry
+from orchestration.agents.retrieval_agent import build_retrieval
+from orchestration.contracts import AgentSpec
+from orchestration.registry import REGISTRY, AgentRegistry
 
 logger = logging.getLogger("farmxpert.orchestration.registry")
 

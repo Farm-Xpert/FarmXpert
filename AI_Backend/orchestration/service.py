@@ -29,17 +29,17 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
-from AI_Backend.orchestration import aggregate, conflicts as conflict_rules, llm, usage
-from AI_Backend.orchestration.contracts import (
+from orchestration import aggregate, conflicts as conflict_rules, llm, usage
+from orchestration.contracts import (
     ExecutionContext,
     OrchestrationStatus,
     Timer,
 )
-from AI_Backend.orchestration.engine import ExecutionEngine
-from AI_Backend.orchestration.observability import Event, emit
-from AI_Backend.orchestration.planner import Intent, Planner
-from AI_Backend.orchestration.registry import REGISTRY, AgentRegistry
-from AI_Backend.orchestration.schemas import (
+from orchestration.engine import ExecutionEngine
+from orchestration.observability import Event, emit
+from orchestration.planner import Intent, Planner
+from orchestration.registry import REGISTRY, AgentRegistry
+from orchestration.schemas import (
     OrchestrationRequest,
     OrchestrationResponse,
     UnderstandingOut,
@@ -141,7 +141,7 @@ class OrchestratorService:
         audio       {seq, format, text, data}    base64 audio, one per sentence, in order
         done        full response + transcript; usage includes speech both ways
         """
-        from AI_Backend.orchestration import speech
+        from orchestration import speech
 
         meter, token = usage.start()
         speaker = speech.SentenceSpeaker(language_hint=request.language)
@@ -279,7 +279,7 @@ class OrchestratorService:
         are detected deterministically even when intents are given and the
         model is not called.
         """
-        from AI_Backend.orchestration import languages
+        from orchestration import languages
 
         intents: List[Intent] = list(request.intents)
         text = request.query or ""

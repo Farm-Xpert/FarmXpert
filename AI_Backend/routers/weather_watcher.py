@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 
-from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
-from AI_Backend.agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
+from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+from agents.crop_planning_growth.weather_watcher.schemas import WeatherWatcherOutput
 
 router = APIRouter(prefix="/weather-watcher", tags=["Weather Watcher"])
 

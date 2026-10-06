@@ -19,14 +19,14 @@ import logging
 import re
 from typing import Iterable, List, Sequence
 
-from AI_Backend.agents.retrieval_agent.config import (
+from agents.retrieval_agent.config import (
     EMBED_BATCH,
     EMBED_MODEL,
     MAX_CHUNK_CHARS,
     MIN_CHUNK_CHARS,
 )
-from AI_Backend.agents.retrieval_agent.okf import OKFDocument, get_bundle
-from AI_Backend.agents.retrieval_agent.store import Chunk, chunk_id_for
+from agents.retrieval_agent.okf import OKFDocument, get_bundle
+from agents.retrieval_agent.store import Chunk, chunk_id_for
 
 logger = logging.getLogger("farmxpert.retrieval.indexer")
 
@@ -94,8 +94,8 @@ async def reindex(*, documents: Sequence[OKFDocument] = ()) -> dict:
     Safe to run repeatedly: ids are stable, so this updates in place. Called
     from an admin endpoint or a deploy step, never during a farmer's request.
     """
-    from AI_Backend.orchestration import llm
-    from AI_Backend.agents.retrieval_agent import store
+    from orchestration import llm
+    from agents.retrieval_agent import store
 
     if not llm.available():
         return {"status": "skipped", "reason": "No embedding key configured.",

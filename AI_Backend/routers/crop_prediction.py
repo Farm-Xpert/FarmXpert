@@ -3,11 +3,11 @@ import logging
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import ValidationError
 
-from AI_Backend.agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
-from AI_Backend.agents.crop_planning_growth.crop_prediction.model_loader import (
+from agents.crop_planning_growth.crop_prediction.agent import CropPredictionAgent
+from agents.crop_planning_growth.crop_prediction.model_loader import (
     UnknownRegionError,
 )
-from AI_Backend.agents.crop_planning_growth.crop_prediction.schemas import (
+from agents.crop_planning_growth.crop_prediction.schemas import (
     CropPredictionRequest,
     CropPredictionResponse,
 )
