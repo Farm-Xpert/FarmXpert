@@ -50,7 +50,7 @@ export async function newCaptcha() {
   else { a = randomInt(2, 10); b = randomInt(2, 10); answer = a * b; symbol = '×'; }
   const id = newOpaqueToken();
   await query(
-    `INSERT INTO auth_challenges (id, kind, secret_hash, expires_at)
+    `INSERT INTO public.auth_challenges (id, kind, secret_hash, expires_at)
      VALUES ($1, 'captcha', $2, now() + $3 * interval '1 minute')`,
     [sha256(id), hmac(answer), config.auth.captchaMinutes],
   );
@@ -64,17 +64,17 @@ async function checkCaptcha(id, answer) {
   }
   const key = sha256(id);
   const row = await one(
-    `UPDATE auth_challenges SET attempts = attempts + 1
+    `UPDATE public.auth_challenges SET attempts = attempts + 1
       WHERE id = $1 AND kind = 'captcha' AND expires_at > now()
       RETURNING secret_hash, attempts`,
     [key],
   );
   if (!row) throw fail(400, 'captcha_expired', 'The security question expired. Please try a new one.');
   if (sameHex(hmac(String(answer).trim()), row.secret_hash)) {
-    await query('DELETE FROM auth_challenges WHERE id = $1', [key]);     // single use
+    await query('DELETE FROM public.auth_challenges WHERE id = $1', [key]); // single use
     return;
   }
-  if (row.attempts >= 3) await query('DELETE FROM auth_challenges WHERE id = $1', [key]);
+  if (row.attempts >= 3) await query('DELETE FROM public.auth_challenges WHERE id = $1', [key]);
   throw fail(400, 'captcha_wrong', 'That answer is not right. Please try again.');
 }
 
@@ -253,7 +253,7 @@ export async function verifyResetCode({ email, code }) {
   await consumeCode(user.id, 'password_reset', code);
   const token = newOpaqueToken();
   await query(
-    `INSERT INTO auth_challenges (id, kind, user_id, expires_at)
+    `INSERT INTO public.auth_challenges (id, kind, user_id, expires_at)
      VALUES ($1, 'password_reset', $2, now() + $3 * interval '1 minute')`,
     [sha256(token), user.id, RESET_AUTH_MINUTES],
   );
@@ -266,7 +266,7 @@ export async function resetPassword({ reset_token, password }) {
   const passwordHash = await hashPassword(password);
   await transaction(async (db) => {
     const { rows } = await db.query(
-      `DELETE FROM auth_challenges WHERE id = $1 AND kind = 'password_reset' AND expires_at > now()
+      `DELETE FROM public.auth_challenges WHERE id = $1 AND kind = 'password_reset' AND expires_at > now()
        RETURNING user_id`,
       [sha256(String(reset_token || ''))],
     );
@@ -311,7 +311,7 @@ export async function setRole(userId, role) {
 export async function purgeExpired() {
   const results = await Promise.all([
     query("DELETE FROM otp_verifications WHERE expires_at < now() - interval '1 day'"),
-    query('DELETE FROM auth_challenges WHERE expires_at < now()'),
+    query('DELETE FROM public.auth_challenges WHERE expires_at < now()'),
     query("DELETE FROM refresh_tokens WHERE expires_at < now() - interval '7 days'"),
   ]);
   return results.reduce((n, r) => n + r.rowCount, 0);
